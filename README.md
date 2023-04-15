@@ -1,3 +1,5 @@
 # HMP
 
-We are holding all coding data here
+This website host the analysis code for manuscript 
+
+Please make contact to xzhou7@stanford.edu if you have any questions. 
