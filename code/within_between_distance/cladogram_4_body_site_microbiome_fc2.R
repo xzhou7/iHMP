@@ -4,7 +4,7 @@
 ###
 no_function()
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())

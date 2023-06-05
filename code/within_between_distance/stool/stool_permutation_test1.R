@@ -1,7 +1,7 @@
 ##
 no_function()
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 load("data/from_xin/physeq_clean.rda")
 setwd("data_analysis/combine_microbiome/distance/stool/")

@@ -1,8 +1,7 @@
-
 ###
 no_function()
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())
@@ -29,19 +28,20 @@ personalized_score$fc3_p_adjust = p.adjust(personalized_score$fc3_p,
 ####means that the between and within distance are same, so the personization score
 ####is 0, so here we just remove the genus whose personization score is 0
 ####remove Unidentified_ASV
-remain_genus = 
-  permutation_p_values %>% 
-  dplyr::filter(fc1_p_adjust < 0.05) %>% 
+remain_genus =
+  permutation_p_values %>%
+  dplyr::filter(fc1_p_adjust < 0.05) %>%
   dplyr::pull(genus)
 
-personalized_score = 
-  personalized_score %>% 
+personalized_score =
+  personalized_score %>%
   dplyr::filter(genus %in% remain_genus)
 
-personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1 
+personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1
 
-personalized_score$fc2 = 
-  (personalized_score$between_mean1 - personalized_score$family_mean1)/(personalized_score$between_mean1 - personalized_score$within_mean1)
+personalized_score$fc2 =
+  (personalized_score$between_mean1 - personalized_score$family_mean1) /
+  (personalized_score$between_mean1 - personalized_score$within_mean1)
 
 # personalized_score$fc2[which(personalized_score$fc2_p_adjust > 0.05 &
 #                                personalized_score$fc3_p_adjust > 0.05)] <- NA
@@ -64,19 +64,20 @@ personalized_score$fc3_p_adjust = p.adjust(personalized_score$fc3_p,
                                            method = "BH")
 
 ####remove the genus whose permutation test > 0.05
-remain_genus = 
-  permutation_p_values %>% 
-  dplyr::filter(fc1_p_adjust < 0.05) %>% 
+remain_genus =
+  permutation_p_values %>%
+  dplyr::filter(fc1_p_adjust < 0.05) %>%
   dplyr::pull(genus)
 
-personalized_score = 
-  personalized_score %>% 
+personalized_score =
+  personalized_score %>%
   dplyr::filter(genus %in% remain_genus)
 
-personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1 
+personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1
 
-personalized_score$fc2 = 
-  (personalized_score$between_mean1 - personalized_score$family_mean1)/(personalized_score$between_mean1 - personalized_score$within_mean1)
+personalized_score$fc2 =
+  (personalized_score$between_mean1 - personalized_score$family_mean1) /
+  (personalized_score$between_mean1 - personalized_score$within_mean1)
 
 # personalized_score$fc2[which(personalized_score$fc2_p_adjust > 0.2 &
 #                                personalized_score$fc3_p_adjust > 0.2)] <- NA
@@ -99,19 +100,20 @@ personalized_score$fc3_p_adjust = p.adjust(personalized_score$fc3_p,
                                            method = "BH")
 
 ####remove the genus whose permutation test > 0.05
-remain_genus = 
-  permutation_p_values %>% 
-  dplyr::filter(fc1_p_adjust < 0.05) %>% 
+remain_genus =
+  permutation_p_values %>%
+  dplyr::filter(fc1_p_adjust < 0.05) %>%
   dplyr::pull(genus)
 
-personalized_score = 
-  personalized_score %>% 
+personalized_score =
+  personalized_score %>%
   dplyr::filter(genus %in% remain_genus)
 
-personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1 
+personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1
 
-personalized_score$fc2 = 
-  (personalized_score$between_mean1 - personalized_score$family_mean1)/(personalized_score$between_mean1 - personalized_score$within_mean1)
+personalized_score$fc2 =
+  (personalized_score$between_mean1 - personalized_score$family_mean1) /
+  (personalized_score$between_mean1 - personalized_score$within_mean1)
 
 # personalized_score$fc2[which(personalized_score$fc2_p_adjust > 0.05 &
 #                                personalized_score$fc3_p_adjust > 0.05)] <- NA
@@ -134,19 +136,20 @@ personalized_score$fc3_p_adjust = p.adjust(personalized_score$fc3_p,
                                            method = "BH")
 
 ####remove the genus whose permutation test > 0.05
-remain_genus = 
-  permutation_p_values %>% 
-  dplyr::filter(fc1_p_adjust < 0.05) %>% 
+remain_genus =
+  permutation_p_values %>%
+  dplyr::filter(fc1_p_adjust < 0.05) %>%
   dplyr::pull(genus)
 
-personalized_score = 
-  personalized_score %>% 
+personalized_score =
+  personalized_score %>%
   dplyr::filter(genus %in% remain_genus)
 
-personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1 
+personalized_score$fc1 = personalized_score$between_mean1 - personalized_score$within_mean1
 
-personalized_score$fc2 = 
-  (personalized_score$between_mean1 - personalized_score$family_mean1)/(personalized_score$between_mean1 - personalized_score$within_mean1)
+personalized_score$fc2 =
+  (personalized_score$between_mean1 - personalized_score$family_mean1) /
+  (personalized_score$between_mean1 - personalized_score$within_mean1)
 
 # personalized_score$fc2[which(personalized_score$fc2_p_adjust > 0.05 &
 #                                personalized_score$fc3_p_adjust > 0.05)] <- NA
@@ -159,12 +162,14 @@ dir.create("data_analysis/combine_microbiome")
 dir.create("data_analysis/combine_microbiome/cladogram/")
 setwd("data_analysis/combine_microbiome/cladogram/")
 
-temp_data = 
-  rbind(stool_personalized_score,
-        skin_personalized_score,
-        oral_personalized_score,
-        nasal_personalized_score) %>% 
-  dplyr::rename(class = dataset) %>% 
+temp_data =
+  rbind(
+    stool_personalized_score,
+    skin_personalized_score,
+    oral_personalized_score,
+    nasal_personalized_score
+  ) %>%
+  dplyr::rename(class = dataset) %>%
   dplyr::mutate(class = stringr::str_to_sentence(class))
 
 personalized_score = temp_data
@@ -172,16 +177,18 @@ personalized_score = temp_data
 library(ggvenn)
 library(ggVennDiagram)
 
-plot = 
-ggVennDiagram(x = 
-  list(
-    Stool = unique(stool_personalized_score$genus),
-    Skin = unique(stool_personalized_score$genus),
-    Oral = unique(oral_personalized_score$genus),
-    Nasal = unique(nasal_personalized_score$genus)
-  ), label_color = "white", 
-  label_geom = "text"
-) +
+plot =
+  ggVennDiagram(
+    x =
+      list(
+        Stool = unique(stool_personalized_score$genus),
+        Skin = unique(stool_personalized_score$genus),
+        Oral = unique(oral_personalized_score$genus),
+        Nasal = unique(nasal_personalized_score$genus)
+      ),
+    label_color = "white",
+    label_geom = "text"
+  ) +
   scale_colour_manual(values = body_site_color)
 plot
 # ggsave(plot, filename = "4_body_site_ovrelap.pdf", width = 9, height = 7)
@@ -231,44 +238,43 @@ dim(sample_info_stool)
 
 variable_info_stool
 
-variable_info = 
-  dplyr::full_join(variable_info_stool, 
-                   variable_info_skin, 
-                   by = colnames(variable_info_stool)) %>% 
-  dplyr::full_join(variable_info_nasal, 
-                   by = colnames(variable_info_stool)) %>% 
-  dplyr::full_join(variable_info_oral, 
-                   by = colnames(variable_info_stool)) %>% 
+variable_info =
+  dplyr::full_join(variable_info_stool,
+                   variable_info_skin,
+                   by = colnames(variable_info_stool)) %>%
+  dplyr::full_join(variable_info_nasal,
+                   by = colnames(variable_info_stool)) %>%
+  dplyr::full_join(variable_info_oral,
+                   by = colnames(variable_info_stool)) %>%
   dplyr::distinct(Genus, .keep_all = TRUE)
 
-rownames(variable_info) = 
+rownames(variable_info) =
   paste("asv", 1:nrow(variable_info), sep = "_")
 
-expression_data = 
+expression_data =
   matrix(1:(nrow(variable_info) * 2), ncol = 2)
 
 colnames(expression_data) = paste("sample", 1:ncol(expression_data), sep = "_")
 rownames(expression_data) = rownames(variable_info)
 
-sample_info = 
+sample_info =
   data.frame(sample_id = colnames(expression_data))
 rownames(sample_info) = sample_info$sample_id
 
 ##remove Archaea
-remove_name = 
+remove_name =
   c("Zea",
-    variable_info %>% 
-      dplyr::filter(Kingdom == "Archaea") %>% 
-      dplyr::pull(Genus)
-  ) %>% 
+    variable_info %>%
+      dplyr::filter(Kingdom == "Archaea") %>%
+      dplyr::pull(Genus)) %>%
   unique()
 
-if(length(remove_name) > 0) {
-  variable_info = 
-    variable_info %>% 
+if (length(remove_name) > 0) {
+  variable_info =
+    variable_info %>%
     dplyr::filter(!Genus %in% remove_name)
-  expression_data = 
-    expression_data[rownames(variable_info),]
+  expression_data =
+    expression_data[rownames(variable_info), ]
 }
 
 expression_data = otu_table(expression_data, taxa_are_rows = TRUE)
@@ -297,27 +303,27 @@ GP = fix_duplicate_tax(GP)
 GP
 
 ###create tree
-tree = 
+tree =
   microbiomeViz::parsePhyloseq(
-  physeq = GP,
-  use_abundance = FALSE,
-  node.size.scale = 0,
-  node.size.offset = 0
-)
+    physeq = GP,
+    use_abundance = FALSE,
+    node.size.scale = 0,
+    node.size.offset = 0
+  )
 
 raw_p <-
   tree.backbone(
-  tree = tree,
-  size = 0.3,
-  shape = 16,
-  layout = "circular",
-  fill = "black",
-  color = "black"
-)
+    tree = tree,
+    size = 0.3,
+    shape = 16,
+    layout = "circular",
+    fill = "black",
+    color = "black"
+  )
 
 raw_p
 
-raw_p$data$nodeClass2 = 
+raw_p$data$nodeClass2 =
   as.character(raw_p$data$nodeClass)
 
 raw_p$data$nodeClass2[is.na(raw_p$data$nodeClass2)] = "Root"
@@ -331,7 +337,7 @@ raw_p$data$nodeClass2[raw_p$data$nodeClass2 == "k"] = "Kingdom"
 raw_p$data$nodeSize2 = raw_p$data$nodeSize
 raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Root"] = 3.5
 raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Kingdom"] = 3
-raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Phylum"] =2.5
+raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Phylum"] = 2.5
 raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Class"] = 2
 raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Order"] = 1.5
 raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Family"] = 1
@@ -339,84 +345,76 @@ raw_p$data$nodeSize2[raw_p$data$nodeClass2 == "Genus"] = 0.5
 
 # #####add node point
 raw_p =
-raw_p +
+  raw_p +
   geom_point2(aes(color = nodeClass2,
                   size = nodeSize2),
-             show.legend = FALSE) +
+              show.legend = FALSE) +
   ggsci::scale_color_jama() +
   ggnewscale::new_scale(new_aes = "fill")
 
 raw_p
 
 ###label 2 is the name of taxa
-raw_p$data$label2 = 
-  raw_p$data$label %>% 
-  stringr::str_split("__") %>% 
-  purrr::map(function(x){
+raw_p$data$label2 =
+  raw_p$data$label %>%
+  stringr::str_split("__") %>%
+  purrr::map(function(x) {
     x[2]
-  }) %>% 
+  }) %>%
   unlist()
 
 raw_p$data$label2[as.character(raw_p$data$nodeClass) != "g"] = NA
 
 #####add new information
 temp_data_fc1 =
-  temp_data %>% 
-  dplyr::select(genus, class, fc1) %>% 
+  temp_data %>%
+  dplyr::select(genus, class, fc1) %>%
   tidyr::pivot_wider(names_from = class, values_from = "fc1")
 
 colnames(temp_data_fc1)[-1] = paste(colnames(temp_data_fc1)[-1], "fc1", sep = "_")
 
 temp_data_fc2 =
-  temp_data %>% 
-  dplyr::select(genus, class, fc2) %>% 
+  temp_data %>%
+  dplyr::select(genus, class, fc2) %>%
   tidyr::pivot_wider(names_from = class, values_from = "fc2")
 
 colnames(temp_data_fc2)[-1] = paste(colnames(temp_data_fc2)[-1], "fc2", sep = "_")
 
 temp_data_fc1_p_adjust =
-  temp_data %>% 
-  dplyr::select(genus, class, fc1_p_adjust) %>% 
+  temp_data %>%
+  dplyr::select(genus, class, fc1_p_adjust) %>%
   tidyr::pivot_wider(names_from = class, values_from = "fc1_p_adjust")
 
-colnames(temp_data_fc1_p_adjust)[-1] = 
+colnames(temp_data_fc1_p_adjust)[-1] =
   paste(colnames(temp_data_fc1_p_adjust)[-1], "fc1_p_adjust", sep = "_")
-  
+
 new_info =
   data.frame(Genus = raw_p$data$label2) %>%
   dplyr::left_join(as.data.frame(variable_info)[, c("Genus", "Kingdom", "Phylum", "Class", "Order", "Family")],
                    by = "Genus") %>%
-  dplyr::left_join(temp_data_fc1, by = c("Genus" = "genus")) %>% 
-  dplyr::left_join(temp_data_fc1_p_adjust, by = c("Genus" = "genus")) %>% 
-  dplyr::left_join(temp_data_fc2, by = c("Genus" = "genus")) %>% 
-  dplyr::mutate(Stool = case_when(
-    !is.na(Stool_fc1) ~ "Stool",
-    TRUE ~ "no"
-  )) %>% 
-  dplyr::mutate(Skin = case_when(
-    !is.na(Skin_fc1) ~ "Skin",
-    TRUE ~ "no"
-  )) %>% 
-  dplyr::mutate(Oral = case_when(
-    !is.na(Oral_fc1) ~ "Oral",
-    TRUE ~ "no"
-  )) %>% 
-  dplyr::mutate(Nasal = case_when(
-    !is.na(Nasal_fc1) ~ "Nasal",
-    TRUE ~ "no"
-  )) %>% 
+  dplyr::left_join(temp_data_fc1, by = c("Genus" = "genus")) %>%
+  dplyr::left_join(temp_data_fc1_p_adjust, by = c("Genus" = "genus")) %>%
+  dplyr::left_join(temp_data_fc2, by = c("Genus" = "genus")) %>%
+  dplyr::mutate(Stool = case_when(!is.na(Stool_fc1) ~ "Stool",
+                                  TRUE ~ "no")) %>%
+  dplyr::mutate(Skin = case_when(!is.na(Skin_fc1) ~ "Skin",
+                                 TRUE ~ "no")) %>%
+  dplyr::mutate(Oral = case_when(!is.na(Oral_fc1) ~ "Oral",
+                                 TRUE ~ "no")) %>%
+  dplyr::mutate(Nasal = case_when(!is.na(Nasal_fc1) ~ "Nasal",
+                                  TRUE ~ "no")) %>%
   dplyr::mutate(Stool_fc1_star = case_when(
     !is.na(Stool_fc1_p_adjust) & Stool_fc1_p_adjust < 0.05 ~ "*",
     TRUE ~ ""
-  )) %>% 
+  )) %>%
   dplyr::mutate(Skin_fc1_star = case_when(
     !is.na(Skin_fc1_p_adjust) & Skin_fc1_p_adjust < 0.05 ~ "*",
     TRUE ~ ""
-  )) %>% 
+  )) %>%
   dplyr::mutate(Oral_fc1_star = case_when(
     !is.na(Oral_fc1_p_adjust) & Oral_fc1_p_adjust < 0.05 ~ "*",
     TRUE ~ ""
-  )) %>% 
+  )) %>%
   dplyr::mutate(Nasal_fc1_star = case_when(
     !is.na(Nasal_fc1_p_adjust) & Nasal_fc1_p_adjust < 0.05 ~ "*",
     TRUE ~ ""
@@ -427,7 +425,7 @@ raw_p$data =
 
 ###add tip label (genus label)
 # #####add point to show this body is here or not
-# raw_p = 
+# raw_p =
 # raw_p +
 #   geom_tippoint(
 #     aes(fill = Stool),
@@ -464,21 +462,21 @@ raw_p$data =
 #     show.legend = FALSE
 #   ) +
 #   scale_fill_manual(values = c(body_site_color, "no" = "white"))
-# 
-#  
+#
+#
 # raw_p
 
 
 ######add highlight
-hight_data = 
-  raw_p$data %>% 
-  dplyr::filter(stringr::str_detect(label, "p__")) %>% 
-  dplyr::select(node, label) %>% 
-  dplyr::mutate(label = stringr::str_replace_all(label, "p__", "")) %>% 
+hight_data =
+  raw_p$data %>%
+  dplyr::filter(stringr::str_detect(label, "p__")) %>%
+  dplyr::select(node, label) %>%
+  dplyr::mutate(label = stringr::str_replace_all(label, "p__", "")) %>%
   dplyr::rename(id = node, type = label)
 
-p1 = 
-raw_p +
+p1 =
+  raw_p +
   geom_hilight(
     data = hight_data,
     mapping = aes(node = id,
@@ -536,7 +534,7 @@ range(
 )
 
 p1 = p1 +
-  ggnewscale::new_scale_fill() 
+  ggnewscale::new_scale_fill()
 
 p2_1 =
   gheatmap(
@@ -545,39 +543,45 @@ p2_1 =
     offset = -0.1,
     width = .08,
     colnames_angle = 95,
-    colnames_offset_y = .25, 
+    colnames_offset_y = .25,
     colnames = FALSE,
     color = alpha(body_site_color["Stool"], 1),
     legend_title = "Index1"
   ) +
-  scale_fill_gradientn(colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)], 
-                       na.value = "white", limits = c(0,0.8)) +
+  scale_fill_gradientn(
+    colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)],
+    na.value = "white",
+    limits = c(0, 0.8)
+  ) +
   ggnewscale::new_scale(new_aes = "fill") +
-    geom_tippoint(
-      mapping = aes(shape = Stool_fc1_star),
-      x = 6.35,
-      size = 2,
-      show.legend = FALSE
-    ) +
-    scale_shape_manual(values = c("*" = "*")) +
+  geom_tippoint(
+    mapping = aes(shape = Stool_fc1_star),
+    x = 6.35,
+    size = 2,
+    show.legend = FALSE
+  ) +
+  scale_shape_manual(values = c("*" = "*")) +
   ggnewscale::new_scale(new_aes = "shape")
-  
+
 p2_1
 
-p2_2 =   
-gheatmap(p = p2_1,
+p2_2 =
+  gheatmap(
+    p = p2_1,
     data = skin_fc1_info,
     offset = 0.5,
     width = .08,
     colnames_angle = 95,
-    colnames_offset_y = .25, 
+    colnames_offset_y = .25,
     colnames = FALSE,
     color = alpha(body_site_color["Skin"], 1),
     legend_title = "Index1"
   ) +
-  scale_fill_gradientn(colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)], 
-                       na.value = "white",
-                       limits = c(0,0.8)) +
+  scale_fill_gradientn(
+    colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)],
+    na.value = "white",
+    limits = c(0, 0.8)
+  ) +
   ggnewscale::new_scale(new_aes = "fill") +
   geom_tippoint(
     mapping = aes(shape = Skin_fc1_star),
@@ -587,23 +591,26 @@ gheatmap(p = p2_1,
   ) +
   scale_shape_manual(values = c("*" = "*")) +
   ggnewscale::new_scale(new_aes = "shape")
-  
+
 p2_2
 
-p2_3 =   
-  gheatmap(p = p2_2,
-           data = oral_fc1_info,
-           offset = 1.1,
-           width = .08,
-           colnames_angle = 95,
-           colnames_offset_y = .25, 
-           colnames = FALSE,
-           color = alpha(body_site_color["Oral"], 1),
-           legend_title = "Index1"
+p2_3 =
+  gheatmap(
+    p = p2_2,
+    data = oral_fc1_info,
+    offset = 1.1,
+    width = .08,
+    colnames_angle = 95,
+    colnames_offset_y = .25,
+    colnames = FALSE,
+    color = alpha(body_site_color["Oral"], 1),
+    legend_title = "Index1"
   ) +
-  scale_fill_gradientn(colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)], 
-                       na.value = "white",
-                       limits = c(0,0.8)) +
+  scale_fill_gradientn(
+    colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)],
+    na.value = "white",
+    limits = c(0, 0.8)
+  ) +
   ggnewscale::new_scale(new_aes = "fill") +
   geom_tippoint(
     mapping = aes(shape = Oral_fc1_star),
@@ -616,20 +623,23 @@ p2_3 =
 
 p2_3
 
-p2_4 =   
-  gheatmap(p = p2_3,
-           data = nasal_fc1_info,
-           offset = 1.7,
-           width = .08,
-           colnames_angle = 95,
-           colnames_offset_y = .25, 
-           colnames = FALSE,
-           color = alpha(body_site_color["Nasal"], 1),
-           legend_title = "Index1"
+p2_4 =
+  gheatmap(
+    p = p2_3,
+    data = nasal_fc1_info,
+    offset = 1.7,
+    width = .08,
+    colnames_angle = 95,
+    colnames_offset_y = .25,
+    colnames = FALSE,
+    color = alpha(body_site_color["Nasal"], 1),
+    legend_title = "Index1"
   ) +
-  scale_fill_gradientn(colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)], 
-                       na.value = "white",
-                       limits = c(0,0.8)) +
+  scale_fill_gradientn(
+    colours = c(RColorBrewer::brewer.pal(n = 11, name = "BrBG"))[-c(5:7)],
+    na.value = "white",
+    limits = c(0, 0.8)
+  ) +
   ggnewscale::new_scale(new_aes = "fill") +
   geom_tippoint(
     mapping = aes(shape = Nasal_fc1_star),
@@ -669,19 +679,17 @@ temp_data =
 temp_data =
   temp_data %>%
   dplyr::filter(isTip)
-  
+
 # openxlsx::write.xlsx(temp_data,
 #                      file = "fc1_tree_data.xlsx",
 #                      asTable = TRUE,
 #                      overwrite = TRUE)
 
 #####summary information
-plot <- 
-personalized_score %>%
-  dplyr::mutate(significant = case_when(
-    fc1_p_adjust < 0.05 ~ class,
-    TRUE ~ "no"
-  )) %>%
+plot <-
+  personalized_score %>%
+  dplyr::mutate(significant = case_when(fc1_p_adjust < 0.05 ~ class,
+                                        TRUE ~ "no")) %>%
   dplyr::mutate(class = factor(class, levels = c("Stool", "Skin", "Oral", "Nasal"))) %>%
   ggplot(aes(class, fc1)) +
   geom_boxplot(outlier.shape = NA) +
@@ -700,10 +708,8 @@ plot
 
 temp <-
   personalized_score %>%
-  dplyr::mutate(significant = case_when(
-    fc1_p_adjust < 0.05 ~ class,
-    TRUE ~ "no"
-  )) %>%
+  dplyr::mutate(significant = case_when(fc1_p_adjust < 0.05 ~ class,
+                                        TRUE ~ "no")) %>%
   dplyr::mutate(class = factor(class, levels = c("Stool", "Skin", "Oral", "Nasal")))
 
 stool_vs_skin_test <-
@@ -731,69 +737,65 @@ oral_vs_nasal_test <-
               temp$fc1[temp$class == "Nasal"])
 
 
-sink(file = "test_result.txt")
-cat("stool vs skin")
-stool_vs_skin_test
-cat("stool vs oral")
-stool_vs_oral_test
-cat("stool vs nasal")
-stool_vs_nasal_test
-cat("skin vs oral")
-skin_vs_oral_test
-cat("skin vs nasal")
-skin_vs_nasal_test
-cat("oral vs nasal")
-oral_vs_nasal_test
-sink()
+# sink(file = "test_result.txt")
+# cat("stool vs skin")
+# stool_vs_skin_test
+# cat("stool vs oral")
+# stool_vs_oral_test
+# cat("stool vs nasal")
+# stool_vs_nasal_test
+# cat("skin vs oral")
+# skin_vs_oral_test
+# cat("skin vs nasal")
+# skin_vs_nasal_test
+# cat("oral vs nasal")
+# oral_vs_nasal_test
+# sink()
 
 
-stool_mean <- 
+stool_mean <-
   mean(temp$fc1[temp$class == "Stool"])
-stool_quantile <- 
+stool_quantile <-
   quantile(temp$fc1[temp$class == "Stool"])
 
-skin_mean <- 
+skin_mean <-
   mean(temp$fc1[temp$class == "Skin"])
-skin_quantile <- 
+skin_quantile <-
   quantile(temp$fc1[temp$class == "Skin"])
 
-oral_mean <- 
+oral_mean <-
   mean(temp$fc1[temp$class == "Oral"])
-oral_quantile <- 
+oral_quantile <-
   quantile(temp$fc1[temp$class == "Oral"])
 
-nasal_mean <- 
+nasal_mean <-
   mean(temp$fc1[temp$class == "Nasal"])
-nasal_quantile <- 
+nasal_quantile <-
   quantile(temp$fc1[temp$class == "Nasal"])
 
 
-sink(file = "median_mean_value.txt")
-cat("stool mean\n")
-stool_mean
-cat("stool quantile\n")
-stool_quantile
-
-cat("skin mean\n")
-skin_mean
-cat("skin quantile\n")
-skin_quantile
-
-cat("oral mean\n")
-oral_mean
-cat("oral quantile\n")
-oral_quantile
-
-cat("nasal mean\n")
-nasal_mean
-cat("nasal quantile\n")
-nasal_quantile
-
-sink()
-
-
-
-
+# sink(file = "median_mean_value.txt")
+# cat("stool mean\n")
+# stool_mean
+# cat("stool quantile\n")
+# stool_quantile
+#
+# cat("skin mean\n")
+# skin_mean
+# cat("skin quantile\n")
+# skin_quantile
+#
+# cat("oral mean\n")
+# oral_mean
+# cat("oral quantile\n")
+# oral_quantile
+#
+# cat("nasal mean\n")
+# nasal_mean
+# cat("nasal quantile\n")
+# nasal_quantile
+#
+# sink()
 
 library(plyr)
 
@@ -801,33 +803,31 @@ variable_info =
   rbind(variable_info_stool,
         variable_info_skin,
         variable_info_oral,
-        variable_info_nasal) %>% 
-  dplyr::select(Phylum, Genus) %>% 
+        variable_info_nasal) %>%
+  dplyr::select(Phylum, Genus) %>%
   dplyr::distinct(.keep_all = TRUE)
 
-remain_phylum = 
-personalized_score %>%
+remain_phylum =
+  personalized_score %>%
   dplyr::left_join(variable_info, by = c("genus" = "Genus")) %>%
   dplyr::group_by(Phylum, class) %>%
   dplyr::summarise(n = n()) %>%
-  dplyr::filter(n >= 5) %>% 
-  dplyr::group_by(Phylum) %>% 
-  dplyr::summarise(n = n()) %>% 
-  dplyr::filter(n > 1) %>% 
+  dplyr::filter(n >= 5) %>%
+  dplyr::group_by(Phylum) %>%
+  dplyr::summarise(n = n()) %>%
+  dplyr::filter(n > 1) %>%
   pull(Phylum)
 
 remain_phylum = remain_phylum[remain_phylum != "Cyanobacteria/Chloroplast"]
 
-plot = 
+plot =
   personalized_score %>%
-  dplyr::mutate(significant = case_when(
-    fc1_p_adjust < 0.05 ~ class,
-    TRUE ~ "no"
-  )) %>%
-  dplyr::left_join(variable_info, by = c("genus" = "Genus")) %>% 
+  dplyr::mutate(significant = case_when(fc1_p_adjust < 0.05 ~ class,
+                                        TRUE ~ "no")) %>%
+  dplyr::left_join(variable_info, by = c("genus" = "Genus")) %>%
   dplyr::mutate(class = factor(class, levels = c("Stool", "Skin", "Oral", "Nasal"))) %>%
-  dplyr::mutate(fc1 = round(fc1, 2)) %>% 
-  dplyr::filter(Phylum %in% remain_phylum) %>% 
+  dplyr::mutate(fc1 = round(fc1, 2)) %>%
+  dplyr::filter(Phylum %in% remain_phylum) %>%
   ggplot(aes(class, fc1)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(aes(size = -log(fc1_p_adjust, 10),
@@ -849,35 +849,45 @@ plot
 #        height = 10)
 
 
-temp_data <- 
-personalized_score %>%
-  dplyr::mutate(significant = case_when(
-    fc1_p_adjust < 0.05 ~ class,
-    TRUE ~ "no"
-  )) %>%
-  dplyr::left_join(variable_info, by = c("genus" = "Genus")) %>% 
+temp_data <-
+  personalized_score %>%
+  dplyr::mutate(significant = case_when(fc1_p_adjust < 0.05 ~ class,
+                                        TRUE ~ "no")) %>%
+  dplyr::left_join(variable_info, by = c("genus" = "Genus")) %>%
   dplyr::mutate(class = factor(class, levels = c("Stool", "Skin", "Oral", "Nasal"))) %>%
-  dplyr::mutate(fc1 = round(fc1, 2)) %>% 
-  # dplyr::filter(Phylum %in% remain_phylum) %>% 
-  dplyr::mutate(Phylum = case_when(
-    Phylum == "Actinobacteria" | Phylum == "Bacteroidetes" | Phylum == "Firmicutes" |  Phylum == "Proteobacteria" ~ Phylum,
-    TRUE ~ "Other"
-  )) %>% 
-  dplyr::mutate(Phylum = factor(Phylum, levels = c("Actinobacteria", 
-                                                   "Bacteroidetes",
-                                                   "Firmicutes",
-                                                   "Proteobacteria",
-                                                   "Other")))
+  dplyr::mutate(fc1 = round(fc1, 2)) %>%
+  # dplyr::filter(Phylum %in% remain_phylum) %>%
+  dplyr::mutate(
+    Phylum = case_when(
+      Phylum == "Actinobacteria" |
+        Phylum == "Bacteroidetes" |
+        Phylum == "Firmicutes" |
+        Phylum == "Proteobacteria" ~ Phylum,
+      TRUE ~ "Other"
+    )
+  ) %>%
+  dplyr::mutate(Phylum = factor(
+    Phylum,
+    levels = c(
+      "Actinobacteria",
+      "Bacteroidetes",
+      "Firmicutes",
+      "Proteobacteria",
+      "Other"
+    )
+  ))
 
 
-plot = 
-  temp_data %>% 
+plot =
+  temp_data %>%
   ggplot(aes(Phylum, fc1)) +
-  geom_jitter(aes(fill = Phylum),
-              size = 3.5,
-              shape = 21,
-              alpha = 0.7,
-              show.legend = FALSE) +
+  geom_jitter(
+    aes(fill = Phylum),
+    size = 3.5,
+    shape = 21,
+    alpha = 0.7,
+    show.legend = FALSE
+  ) +
   geom_boxplot(outlier.shape = NA, fill = "transparent") +
   scale_fill_manual(values = c(phylum_color, "Other" = "grey")) +
   # guides(size = guide_legend(title = "-log10(p-adjust)")) +
@@ -887,8 +897,15 @@ plot =
   facet_wrap(facets = vars(class),
              # scales = "free_y",
              nrow = 1) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10),
-        strip.text = element_text(size = 10))
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      vjust = 1,
+      size = 10
+    ),
+    strip.text = element_text(size = 10)
+  )
 
 plot
 
@@ -898,14 +915,17 @@ plot
 #        height = 4)
 
 
-temp_data <- 
-  temp_data %>% 
-  dplyr::select(-c(fc1_p, fc2_p, fc3_p, fc1_p_adjust, fc2_p_adjust, fc3_p_adjust, fc2)) %>% 
+temp_data <-
+  temp_data %>%
+  dplyr::select(-c(
+    fc1_p,
+    fc2_p,
+    fc3_p,
+    fc1_p_adjust,
+    fc2_p_adjust,
+    fc3_p_adjust,
+    fc2
+  )) %>%
   dplyr::rename(dmi = fc1)
 
-write.csv(temp_data, "dmi_based_on_phylum.csv", row.names = FALSE)
-
-
-
-
-
+# write.csv(temp_data, "dmi_based_on_phylum.csv", row.names = FALSE)

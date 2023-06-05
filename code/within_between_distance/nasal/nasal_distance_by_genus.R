@@ -1,5 +1,5 @@
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 
@@ -437,13 +437,13 @@ head(nasal_braydist_by_genus)
 table(nasal_braydist_by_genus$subject_id1)
 
 ####if the diff days affect the within and between distance
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/combine_microbiome/distance/nasal/")
 
 all_genus = nasal_braydist_by_genus$genus %>%
   unique()
 
-save(all_genus, file = "all_genus")
+# save(all_genus, file = "all_genus")
 
 # final_result =
 #   purrr::map(1:length(unique(nasal_braydist_by_genus$genus)), function(idx) {
@@ -665,27 +665,27 @@ dir.create("boxplot")
 #   nasal_braydist_by_genus %>%
 #     dplyr::filter(genus == temp_genus) %>%
 #     dplyr::mutate(type = factor(type, levels = c("within", "family", "between")))
-# 
+#
 #   nrow(temp_data)
-# 
+#
 #   p1 = permutation_p_values$fc1_p_adjust[permutation_p_values$genus == temp_genus]
 #   p2 = permutation_p_values$fc2_p_adjust[permutation_p_values$genus == temp_genus]
-# 
+#
 #   p3 =
 #   personalized_score %>%
 #     dplyr::filter(genus == temp_genus) %>%
 #     dplyr::select(fc1_p_adjust)
-# 
+#
 #   p4 =
 #     personalized_score %>%
 #     dplyr::filter(genus == temp_genus) %>%
 #     dplyr::select(fc2_p_adjust)
-# 
+#
 #   p5 =
 #     personalized_score %>%
 #     dplyr::filter(genus == temp_genus) %>%
 #     dplyr::select(fc3_p_adjust)
-# 
+#
 #   text =
 #     paste(
 #       paste("permutation_test (Between - within), ", p1),
@@ -695,7 +695,7 @@ dir.create("boxplot")
 #       paste("wilcox test (within vs family)", p5),
 #       sep = "\n"
 #     )
-# 
+#
 #   plot =
 #     temp_data %>%
 #     ggplot() +
@@ -719,13 +719,13 @@ dir.create("boxplot")
 #       vjust = 1
 #     ) +
 #     labs(x = "", y = "Bray-Curtis distance")
-# 
+#
 #   if(all(as.character(unique(temp_data$type)) != "family")){
 #     temp_data$x[temp_data$type == "within"] =
 #       1 + sample(seq(-0.3, 0.3, length.out = 1000),
 #                  sum(temp_data$type == "within"),
 #                  replace = TRUE)
-# 
+#
 #     if(sum(temp_data$type == "within") > 2000){
 #       plot =
 #       plot +
@@ -742,15 +742,15 @@ dir.create("boxplot")
 #                    data = temp_data %>% dplyr::filter(type == "within"),
 #                    show.legend = FALSE,
 #                    color = between_within_color["within"])
-# 
+#
 #     }
-# 
+#
 #     temp_data$x[temp_data$type == "between"] =
 #       2 + sample(seq(-0.3, 0.3, length.out = 1000),
 #                  sum(temp_data$type == "between"),
 #                  replace = TRUE)
-# 
-# 
+#
+#
 #     if(sum(temp_data$type == "between") > 2000){
 #       plot =
 #         plot +
@@ -769,16 +769,16 @@ dir.create("boxplot")
 #                    data = temp_data %>% dplyr::filter(type == "between"),
 #                    show.legend = FALSE,
 #                    color = between_within_color["between"])
-# 
+#
 #     }
-# 
-# 
+#
+#
 #   }else{
 #     temp_data$x[temp_data$type == "within"] =
 #       1 + sample(seq(-0.3, 0.3, length.out = 1000),
 #                  sum(temp_data$type == "within"),
 #                  replace = TRUE)
-# 
+#
 #     if(sum(temp_data$type == "within") > 2000){
 #       plot =
 #         plot +
@@ -797,15 +797,15 @@ dir.create("boxplot")
 #                    data = temp_data %>% dplyr::filter(type == "within"),
 #                    show.legend = FALSE,
 #                    color = between_within_color["within"])
-# 
+#
 #     }
-# 
-# 
+#
+#
 #     temp_data$x[temp_data$type == "family"] =
 #       2 + sample(seq(-0.3, 0.3, length.out = 1000),
 #                  sum(temp_data$type == "family"),
 #                  replace = TRUE)
-# 
+#
 #     if(sum(temp_data$type == "family") > 2000){
 #       plot =
 #         plot +
@@ -825,15 +825,15 @@ dir.create("boxplot")
 #                    data = temp_data %>% dplyr::filter(type == "family"),
 #                    show.legend = FALSE,
 #                    color = between_within_color["family"])
-# 
+#
 #     }
-# 
-# 
+#
+#
 #     temp_data$x[temp_data$type == "between"] =
 #       3 + sample(seq(-0.3, 0.3, length.out = 1000),
 #                  sum(temp_data$type == "between"),
 #                  replace = TRUE)
-# 
+#
 #     if(sum(temp_data$type == "between") > 2000){
 #       plot =
 #         plot +
@@ -853,10 +853,10 @@ dir.create("boxplot")
 #                    data = temp_data %>% dplyr::filter(type == "between"),
 #                    show.legend = FALSE,
 #                    color = between_within_color["between"])
-# 
+#
 #     }
 #   }
-# 
+#
 #   ggsave(
 #     plot,
 #     filename = file.path(

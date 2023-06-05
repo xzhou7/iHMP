@@ -1,7 +1,7 @@
 ###
 no_function()
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())
@@ -340,10 +340,10 @@ temp_data =
   temp_data %>%
   dplyr::filter(!is.na(fc1_p_adjust))
 
-openxlsx::write.xlsx(temp_data,
-                     file = "tree_data.xlsx",
-                     asTable = TRUE,
-                     overwrite = TRUE)
+# openxlsx::write.xlsx(temp_data,
+#                      file = "tree_data.xlsx",
+#                      asTable = TRUE,
+#                      overwrite = TRUE)
 
 table(temp_data$Kingdom)
 table(temp_data$Phylum)
@@ -606,12 +606,12 @@ Family_result =
   do.call(rbind, .) %>%
   as.data.frame()
 
-######class
-save(Kingdom_result, file = "Kingdom_result")
-save(Phylum_result, file = "Phylum_result")
-save(Class_result, file = "Class_result")
-save(Order_result, file = "Order_result")
-save(Family_result, file = "Family_result")
+# ######class
+# save(Kingdom_result, file = "Kingdom_result")
+# save(Phylum_result, file = "Phylum_result")
+# save(Class_result, file = "Class_result")
+# save(Order_result, file = "Order_result")
+# save(Family_result, file = "Family_result")
 
 Kingdom_result =
 Kingdom_result %>%
@@ -645,28 +645,28 @@ Family_result %>%
 
 ####output result
 library(openxlsx)
-wb <- createWorkbook()
-modifyBaseFont(wb, fontSize = 12, fontName = "Times New Roma")
-
-addWorksheet(wb, sheetName = "Kingdom", gridLines = TRUE)
-addWorksheet(wb, sheetName = "Phylum", gridLines = TRUE)
-addWorksheet(wb, sheetName = "Class", gridLines = TRUE)
-addWorksheet(wb, sheetName = "Order", gridLines = TRUE)
-addWorksheet(wb, sheetName = "Family", gridLines = TRUE)
-
-freezePane(wb, sheet = 1, firstRow = TRUE, firstCol = TRUE)
-freezePane(wb, sheet = 2, firstRow = TRUE, firstCol = TRUE)
-freezePane(wb, sheet = 3, firstRow = TRUE, firstCol = TRUE)
-freezePane(wb, sheet = 4, firstRow = TRUE, firstCol = TRUE)
-freezePane(wb, sheet = 5, firstRow = TRUE, firstCol = TRUE)
-
-writeDataTable(wb, sheet = 1, x = Kingdom_result, colNames = TRUE,rowNames = FALSE)
-writeDataTable(wb, sheet = 2, x = Phylum_result, colNames = TRUE,rowNames = FALSE)
-writeDataTable(wb, sheet = 3, x = Class_result, colNames = TRUE,rowNames = FALSE)
-writeDataTable(wb, sheet = 4, x = Order_result, colNames = TRUE,rowNames = FALSE)
-writeDataTable(wb, sheet = 5, x = Family_result, colNames = TRUE,rowNames = FALSE)
-
-saveWorkbook(wb, "chisq.test.result.xlsx", overwrite = TRUE)
+# wb <- createWorkbook()
+# modifyBaseFont(wb, fontSize = 12, fontName = "Times New Roma")
+# 
+# addWorksheet(wb, sheetName = "Kingdom", gridLines = TRUE)
+# addWorksheet(wb, sheetName = "Phylum", gridLines = TRUE)
+# addWorksheet(wb, sheetName = "Class", gridLines = TRUE)
+# addWorksheet(wb, sheetName = "Order", gridLines = TRUE)
+# addWorksheet(wb, sheetName = "Family", gridLines = TRUE)
+# 
+# freezePane(wb, sheet = 1, firstRow = TRUE, firstCol = TRUE)
+# freezePane(wb, sheet = 2, firstRow = TRUE, firstCol = TRUE)
+# freezePane(wb, sheet = 3, firstRow = TRUE, firstCol = TRUE)
+# freezePane(wb, sheet = 4, firstRow = TRUE, firstCol = TRUE)
+# freezePane(wb, sheet = 5, firstRow = TRUE, firstCol = TRUE)
+# 
+# writeDataTable(wb, sheet = 1, x = Kingdom_result, colNames = TRUE,rowNames = FALSE)
+# writeDataTable(wb, sheet = 2, x = Phylum_result, colNames = TRUE,rowNames = FALSE)
+# writeDataTable(wb, sheet = 3, x = Class_result, colNames = TRUE,rowNames = FALSE)
+# writeDataTable(wb, sheet = 4, x = Order_result, colNames = TRUE,rowNames = FALSE)
+# writeDataTable(wb, sheet = 5, x = Family_result, colNames = TRUE,rowNames = FALSE)
+# 
+# saveWorkbook(wb, "chisq.test.result.xlsx", overwrite = TRUE)
 
 Kingdom_result
 Phylum_result
@@ -695,4 +695,4 @@ final_p =
 
 final_p
 
-ggsave(final_p, filename = "nasal.tree.pdf", width = 12, height = 12)
+# ggsave(final_p, filename = "nasal.tree.pdf", width = 12, height = 12)

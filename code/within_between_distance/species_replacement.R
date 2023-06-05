@@ -1,5 +1,5 @@
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 
@@ -48,7 +48,7 @@ readr::write_csv(x = data, file = "Figures/Figure3/strainreplacement/nasal.repla
 
 
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 
@@ -98,7 +98,7 @@ readr::write_csv(x = data, file = "Figures/Figure3/strainreplacement/oral.replac
 
 
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 
@@ -146,7 +146,7 @@ readr::write_csv(x = data, file = "Figures/Figure3/strainreplacement/stool.repla
 
 
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 

@@ -1,12 +1,7 @@
-
-
-
-
-
 ###
 no_function()
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())
@@ -90,7 +85,6 @@ oral_braydist_by_genus =
   oral_braydist_by_genus %>%
   dplyr::filter(genus %in% remain_genus)
 
-
 oral_braydist_by_genus$type
 
 library(gghalves)
@@ -164,9 +158,6 @@ skin_family_between_test <-
   wilcox.test(temp_data2$dist[which(temp_data2$type == "family")],
               temp_data2$dist[which(temp_data2$type == "between")])
 
-
-
-
 oral_within_family_test <-
   wilcox.test(temp_data3$dist[which(temp_data3$type == "within")],
               temp_data3$dist[which(temp_data3$type == "family")])
@@ -178,8 +169,6 @@ oral_within_between_test <-
 oral_family_between_test <-
   wilcox.test(temp_data3$dist[which(temp_data3$type == "family")],
               temp_data3$dist[which(temp_data3$type == "between")])
-
-
 
 nasal_within_family_test <-
   wilcox.test(temp_data4$dist[which(temp_data4$type == "within")],
@@ -193,38 +182,37 @@ nasal_family_between_test <-
   wilcox.test(temp_data4$dist[which(temp_data4$type == "family")],
               temp_data4$dist[which(temp_data4$type == "between")])
 
-
-#####write test result
-sink(file = "test_result.txt")
-cat("Stool within vs family")
-stool_within_family_test
-cat("Stool within vs between")
-stool_within_between_test
-cat("Stool family vs between")
-stool_family_between_test
-
-cat("Skin within vs family")
-skin_within_family_test
-cat("Skin within vs between")
-skin_within_between_test
-cat("Skin family vs between")
-skin_family_between_test
-
-cat("Oral within vs family")
-oral_within_family_test
-cat("Oral within vs between")
-oral_within_between_test
-cat("Oral family vs between")
-oral_family_between_test
-
-cat("Nasal within vs family")
-nasal_within_family_test
-cat("Nasal within vs between")
-nasal_within_between_test
-cat("Nasal family vs between")
-nasal_family_between_test
-
-sink()
+# #####write test result
+# sink(file = "test_result.txt")
+# cat("Stool within vs family")
+# stool_within_family_test
+# cat("Stool within vs between")
+# stool_within_between_test
+# cat("Stool family vs between")
+# stool_family_between_test
+# 
+# cat("Skin within vs family")
+# skin_within_family_test
+# cat("Skin within vs between")
+# skin_within_between_test
+# cat("Skin family vs between")
+# skin_family_between_test
+# 
+# cat("Oral within vs family")
+# oral_within_family_test
+# cat("Oral within vs between")
+# oral_within_between_test
+# cat("Oral family vs between")
+# oral_family_between_test
+# 
+# cat("Nasal within vs family")
+# nasal_within_family_test
+# cat("Nasal within vs between")
+# nasal_within_between_test
+# cat("Nasal family vs between")
+# nasal_family_between_test
+# 
+# sink()
 # unlink('test_result.txt')
 
 stool_within_dist_quantile <-
@@ -253,7 +241,6 @@ skin_between_dist_quantile <-
 skin_between_dist_mean <-
   mean(temp_data2$dist[temp_data2$type == "between"])
 
-
 oral_within_dist_quantile <-
   quantile(temp_data3$dist[temp_data3$type == "within"])
 oral_within_dist_mean <-
@@ -266,7 +253,6 @@ oral_between_dist_quantile <-
   quantile(temp_data3$dist[temp_data3$type == "between"])
 oral_between_dist_mean <-
   mean(temp_data3$dist[temp_data3$type == "between"])
-
 
 nasal_within_dist_quantile <-
   quantile(temp_data4$dist[temp_data4$type == "within"])
@@ -281,61 +267,60 @@ nasal_between_dist_quantile <-
 nasal_between_dist_mean <-
   mean(temp_data4$dist[temp_data4$type == "between"])
 
-
-sink(file = "median_mean_value.txt")
-cat("Stool within mean\n")
-stool_within_dist_mean
-cat("Stool within quantile\n")
-stool_within_dist_quantile
-cat("Stool family mean\n")
-stool_family_dist_mean
-cat("Stool family quantile\n")
-stool_family_dist_quantile
-cat("Stool between mean\n")
-stool_between_dist_mean
-cat("Stool between quantile\n")
-stool_between_dist_quantile
-
-cat("skin within mean\n")
-skin_within_dist_mean
-cat("skin within quantile\n")
-skin_within_dist_quantile
-cat("skin family mean\n")
-skin_family_dist_mean
-cat("skin family quantile\n")
-skin_family_dist_quantile
-cat("skin between mean\n")
-skin_between_dist_mean
-cat("skin between quantile\n")
-skin_between_dist_quantile
-
-cat("oral within mean\n")
-oral_within_dist_mean
-cat("oral within quantile\n")
-oral_within_dist_quantile
-cat("oral family mean\n")
-oral_family_dist_mean
-cat("oral family quantile\n")
-oral_family_dist_quantile
-cat("oral between mean\n")
-oral_between_dist_mean
-cat("oral between quantile\n")
-oral_between_dist_quantile
-
-cat("nasal within mean\n")
-nasal_within_dist_mean
-cat("nasal within quantile\n")
-nasal_within_dist_quantile
-cat("nasal family mean\n")
-nasal_family_dist_mean
-cat("nasal family quantile\n")
-nasal_family_dist_quantile
-cat("nasal between mean\n")
-nasal_between_dist_mean
-cat("nasal between quantile\n")
-nasal_between_dist_quantile
-
-sink()
+# sink(file = "median_mean_value.txt")
+# cat("Stool within mean\n")
+# stool_within_dist_mean
+# cat("Stool within quantile\n")
+# stool_within_dist_quantile
+# cat("Stool family mean\n")
+# stool_family_dist_mean
+# cat("Stool family quantile\n")
+# stool_family_dist_quantile
+# cat("Stool between mean\n")
+# stool_between_dist_mean
+# cat("Stool between quantile\n")
+# stool_between_dist_quantile
+# 
+# cat("skin within mean\n")
+# skin_within_dist_mean
+# cat("skin within quantile\n")
+# skin_within_dist_quantile
+# cat("skin family mean\n")
+# skin_family_dist_mean
+# cat("skin family quantile\n")
+# skin_family_dist_quantile
+# cat("skin between mean\n")
+# skin_between_dist_mean
+# cat("skin between quantile\n")
+# skin_between_dist_quantile
+# 
+# cat("oral within mean\n")
+# oral_within_dist_mean
+# cat("oral within quantile\n")
+# oral_within_dist_quantile
+# cat("oral family mean\n")
+# oral_family_dist_mean
+# cat("oral family quantile\n")
+# oral_family_dist_quantile
+# cat("oral between mean\n")
+# oral_between_dist_mean
+# cat("oral between quantile\n")
+# oral_between_dist_quantile
+# 
+# cat("nasal within mean\n")
+# nasal_within_dist_mean
+# cat("nasal within quantile\n")
+# nasal_within_dist_quantile
+# cat("nasal family mean\n")
+# nasal_family_dist_mean
+# cat("nasal family quantile\n")
+# nasal_family_dist_quantile
+# cat("nasal between mean\n")
+# nasal_between_dist_mean
+# cat("nasal between quantile\n")
+# nasal_between_dist_quantile
+# 
+# sink()
 
 
 # save(temp_data1, file = "temp_data1")
@@ -357,8 +342,6 @@ plot1 =
   labs(y = "Distance", x = "")
 plot1
 # ggsave(plot1, filename = "stool_distance.pdf", width = 7, height = 6)
-
-
 
 plot2 =
   temp_data2 %>%

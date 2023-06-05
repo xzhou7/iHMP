@@ -1,5 +1,5 @@
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 
@@ -68,6 +68,7 @@ subdat3 = prune_samples(sample_sums(subdat2) > 0, subdat2)
 #   dplyr::filter(!is.na(dist))
 #
 # save(dist, file = "dist")
+
 load("dist")
 
 dist <-

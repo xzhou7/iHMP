@@ -2,7 +2,7 @@
 ###
 no_function()
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())
@@ -44,7 +44,7 @@ personalized_score$fc2[which(personalized_score$fc2_p_adjust > 0.05 |
 
 personalized_score$fc2[which(personalized_score$family_mean1 > personalized_score$between_mean1)] = NA
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/combine_microbiome/distance/stool/")
 
 library(plotly)
