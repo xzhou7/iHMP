@@ -16,7 +16,7 @@
 no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 source("code/tools.R")
@@ -92,7 +92,7 @@ ggplot(data = pd, aes(x = dt, y = value)) +
   )
 plot
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/ICC")
 plot
 # ggsave(plot, filename = "icc_of_different_body_site_microbiome_asv2.pdf", width = 9, height = 7)
@@ -642,6 +642,8 @@ bxp <- ggboxplot(
   labs(x = "", y = "ICC of Normalized Variables")
 bxp
 
+ggsave(bxp, filename = "icc_plot.pdf", width = 12, height = 7)
+
 library(rstatix)
 
 stat.test <- temp_data %>%
@@ -706,7 +708,7 @@ bxp2
 temp_data
 
 icc_data <- temp_data
-save(icc_data, file = "icc_data")
+# save(icc_data, file = "icc_data")
 
 # 
 # #######only for nasal

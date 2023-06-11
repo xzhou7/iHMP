@@ -1,5 +1,5 @@
 #' ---
-#' title: "nasal microbiome metabolome correlation"
+#' title: "oral microbiome metabolome correlation"
 #' author: 
 #'   - name: "Xiaotao Shen" 
 #'     url: https://www.shenxt.info/
@@ -39,9 +39,9 @@ myVD <- function(ds, trans){
   htb = as.data.frame(htb)
   vd = {}
   for (i in 8:ncol(htb)) {
-    if (trans == "Original") {model <- tryCatch(lmer(scale(htb[, i]) ~ 1 + Days + A1C + SSPG + FPG + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
-    if (trans == "Log10") {model <- tryCatch(lmer(scale(log10(htb[, i])) ~ 1 + Days + A1C + SSPG + FPG + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
-    if (trans == "Arcsin") {model <- tryCatch(lmer(scale(asin(sqrt(htb[, i]))) ~ 1 + Days + A1C + SSPG + FPG + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
+    if (trans == "Original") {model <- tryCatch(lmer(scale(htb[, i]) ~ 1 + Days + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
+    if (trans == "Log10") {model <- tryCatch(lmer(scale(log10(htb[, i])) ~ 1 + Days + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
+    if (trans == "Arcsin") {model <- tryCatch(lmer(scale(asin(sqrt(htb[, i]))) ~ 1 + Days + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
     if (!is.na(model)) {
       v.var = as.data.frame(VarCorr(model), comp=c("Variance"))[, 4] #Extracting random effect variances
       v.var <- c(v.var, as.data.frame(anova(model))[, 2]) #Extracting Sum Sq for fixed effects
@@ -53,7 +53,7 @@ myVD <- function(ds, trans){
   }
   rownames(vd) <- colnames(htb)[-c(1:7)]
   vd <- as.data.frame(vd)
-  colnames(vd) <- c("random_Subject", "random_Residual", "fix_Days", "fix_A1C", "fix_SSPG", "fix_FPG")
+  colnames(vd) <- c("random_Subject", "random_Residual")
   return(vd)
 } #End of function
 
@@ -68,17 +68,17 @@ clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
 a1c.df = clinic.sc %>% 
   dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
 
-nasal_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/NS/ASV_NS.csv")) %>% 
+oral_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/OR/ASV_OR.csv")) %>% 
   dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:batch)) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
   as.data.frame()
 
 idx = 
-  nasal_microbiome_expression_data %>% 
+  oral_microbiome_expression_data %>% 
   dplyr::select(-SampleID) %>% 
   apply(2, function(x){
-    sum(x != 0)/nrow(nasal_microbiome_expression_data)
+    sum(x != 0)/nrow(oral_microbiome_expression_data)
   }) %>% 
   `>=`(0.1) %>% 
   which() %>% 
@@ -86,187 +86,181 @@ idx =
 
 length(idx)
 
-nasal_microbiome_expression_data = 
-  nasal_microbiome_expression_data[,c(1, idx)]
+oral_microbiome_expression_data = 
+  oral_microbiome_expression_data[,c(1, idx)]
 
-#16S_nasal
+#16S_oral
 ds =
-  nasal_microbiome_expression_data %>% 
+  oral_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
   dplyr::filter(!is.na(SSPG) & 
                   !is.na(A1C) & 
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_nasal_asv2 = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/nasal_microbiome/ICC/")
-save(vd_nasal_asv2, file = "data_analysis/nasal_microbiome/ICC/vd_nasal_asv2")
+vd_oral_asv2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/oral_microbiome/ICC_without_confounder/")
+save(vd_oral_asv2, file = "data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_asv2")
 
 ###load variable_info
 
-load(here::here("data_analysis/nasal_microbiome/data_preparation/variable_info"))
+load(here::here("data_analysis/oral_microbiome/data_preparation/variable_info"))
 
-# variable_info <-
+# variable_info =
 # variable_info %>% 
-#   dplyr::filter(variable_id %in% rownames(vd_nasal_asv2))
+#   dplyr::filter(variable_id %in% rownames(vd_oral_asv2))
 
 ####----------------------------------------------------------------------------
 ####Phylum level
 #######
 ####load data
-load(here::here("data/from_xin/Revision_MultiOmes_0509.RData"))
-clinic.sc = merge(clinic.df, sc, by = "SubjectID")
-clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
-a1c.df = clinic.sc %>% 
-  dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
-
-nasal_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/NS/Phylum_NS.csv")) %>% 
+oral_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/OR/Phylum_OR.csv")) %>% 
   dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:batch)) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
   as.data.frame()
 
 idx = 
-which(colnames(nasal_microbiome_expression_data) %in% variable_info$Phylum)
+which(colnames(oral_microbiome_expression_data) %in% variable_info$Phylum)
 length(idx)
 
-nasal_microbiome_expression_data = 
-  nasal_microbiome_expression_data[,c(1, idx)]
+oral_microbiome_expression_data = 
+  oral_microbiome_expression_data[,c(1, idx)]
 
-#16S_nasal
+#16S_oral
 ds =
-nasal_microbiome_expression_data %>% 
+oral_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
   dplyr::filter(!is.na(SSPG) & 
                   !is.na(A1C) & 
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_nasal_phylum2 = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/nasal_microbiome/ICC/")
-save(vd_nasal_phylum2, file = "data_analysis/nasal_microbiome/ICC/vd_nasal_phylum2")
+vd_oral_phylum2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/oral_microbiome/ICC_without_confounder/")
+save(vd_oral_phylum2, file = "data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_phylum2")
 
 
 ####----------------------------------------------------------------------------
 ####order level
 #######
 ####load data
-nasal_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/NS/Order_NS.csv")) %>% 
+
+oral_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/OR/Order_OR.csv")) %>% 
   dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:batch)) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
   as.data.frame()
 
 idx = 
-  which(colnames(nasal_microbiome_expression_data) %in% variable_info$Order) 
+  which(colnames(oral_microbiome_expression_data) %in% variable_info$Order) 
   
-nasal_microbiome_expression_data = 
-  nasal_microbiome_expression_data[,c(1, idx)]
+oral_microbiome_expression_data = 
+  oral_microbiome_expression_data[,c(1, idx)]
 
-#16S_nasal
+#16S_oral
 ds =
-  nasal_microbiome_expression_data %>% 
+  oral_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
   dplyr::filter(!is.na(SSPG) & 
                   !is.na(A1C) & 
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_nasal_order2 = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/nasal_microbiome/ICC/")
-save(vd_nasal_order2, file = "data_analysis/nasal_microbiome/ICC/vd_nasal_order2")
+vd_oral_order2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/oral_microbiome/ICC_without_confounder/")
+save(vd_oral_order2, file = "data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_order2")
 
 
 ####----------------------------------------------------------------------------
 ####genus level
 #######
 ####load data
-nasal_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/NS/Genus_NS.csv")) %>% 
+oral_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/OR/Genus_OR.csv")) %>% 
   dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:batch)) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
   as.data.frame()
 
 idx = 
-  which(colnames(nasal_microbiome_expression_data) %in% variable_info$Genus)
+  which(colnames(oral_microbiome_expression_data) %in% variable_info$Genus)
   
 length(idx)
-nasal_microbiome_expression_data = 
-  nasal_microbiome_expression_data[,c(1, idx)]
+oral_microbiome_expression_data = 
+  oral_microbiome_expression_data[,c(1, idx)]
 
-#16S_nasal
+#16S_oral
 ds =
-  nasal_microbiome_expression_data %>% 
+  oral_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
   dplyr::filter(!is.na(SSPG) & 
                   !is.na(A1C) & 
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_nasal_genus2 = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/nasal_microbiome/ICC/")
-save(vd_nasal_genus2, file = "data_analysis/nasal_microbiome/ICC/vd_nasal_genus2")
+vd_oral_genus2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/oral_microbiome/ICC_without_confounder/")
+save(vd_oral_genus2, file = "data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_genus2")
 
 
 ####----------------------------------------------------------------------------
 ####family level
 #######
 ####load data
-nasal_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/NS/Family_NS.csv")) %>% 
+oral_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/OR/Family_OR.csv")) %>% 
   dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:batch)) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
   as.data.frame()
 
 idx = 
-  which(colnames(nasal_microbiome_expression_data) %in% variable_info$Family)
+  which(colnames(oral_microbiome_expression_data) %in% variable_info$Family)
   
 length(idx)
-nasal_microbiome_expression_data = 
-  nasal_microbiome_expression_data[,c(1, idx)]
+oral_microbiome_expression_data = 
+  oral_microbiome_expression_data[,c(1, idx)]
 
-#16S_nasal
+#16S_oral
 ds =
-  nasal_microbiome_expression_data %>% 
+  oral_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
   dplyr::filter(!is.na(SSPG) & 
                   !is.na(A1C) & 
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_nasal_family2 = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/nasal_microbiome/ICC/")
-save(vd_nasal_family2, file = "data_analysis/nasal_microbiome/ICC/vd_nasal_family2")
-
+vd_oral_family2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/oral_microbiome/ICC_without_confounder/")
+save(vd_oral_family2, file = "data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_family2")
 
 ####----------------------------------------------------------------------------
 ####class level
 #######
 ####load data
-nasal_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/NS/Class_NS.csv")) %>% 
+oral_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/OR/Class_OR.csv")) %>% 
   dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:batch)) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
   as.data.frame()
 
 idx = 
-  which(colnames(nasal_microbiome_expression_data) %in% variable_info$Class)
+  which(colnames(oral_microbiome_expression_data) %in% variable_info$Class)
   
-nasal_microbiome_expression_data = 
-  nasal_microbiome_expression_data[,c(1, idx)]
+oral_microbiome_expression_data = 
+  oral_microbiome_expression_data[,c(1, idx)]
 length(idx)
-#16S_nasal
+#16S_oral
 ds =
-  nasal_microbiome_expression_data %>% 
+  oral_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
   dplyr::filter(!is.na(SSPG) & 
                   !is.na(A1C) & 
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_nasal_class2 = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/nasal_microbiome/ICC/")
-save(vd_nasal_class2, file = "data_analysis/nasal_microbiome/ICC/vd_nasal_class2")
+vd_oral_class2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/oral_microbiome/ICC_without_confounder/")
+save(vd_oral_class2, file = "data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_class2")
 
 
 

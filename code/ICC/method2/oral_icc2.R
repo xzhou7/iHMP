@@ -13,10 +13,10 @@
 
 #+ r setup, echo=TRUE, eval = TRUE, include = TRUE
 
-no_function()
+# no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 
@@ -106,9 +106,9 @@ save(vd_oral_asv2, file = "data_analysis/oral_microbiome/ICC/vd_oral_asv2")
 
 load(here::here("data_analysis/oral_microbiome/data_preparation/variable_info"))
 
-variable_info =
-variable_info %>% 
-  dplyr::filter(variable_id %in% rownames(vd_oral_asv))
+# variable_info =
+# variable_info %>% 
+#   dplyr::filter(variable_id %in% rownames(vd_oral_asv2))
 
 ####----------------------------------------------------------------------------
 ####Phylum level

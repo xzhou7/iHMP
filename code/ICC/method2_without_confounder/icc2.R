@@ -23,18 +23,18 @@ source("code/tools.R")
 
 ###ASV
 ####load data asv level
-load(here::here("data_analysis/nasal_microbiome/ICC/vd_nasal_asv"))
-load(here::here("data_analysis/oral_microbiome/ICC/vd_oral_asv"))
-load(here::here("data_analysis/skin_microbiome/ICC/vd_skin_asv"))
-load(here::here("data_analysis/stool_microbiome/ICC/vd_stool_asv"))
+load(here::here("data_analysis/nasal_microbiome/ICC_without_confounder/vd_nasal_asv2"))
+load(here::here("data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_asv2"))
+load(here::here("data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_asv2"))
+load(here::here("data_analysis/stool_microbiome/ICC_without_confounder/vd_stool_asv2"))
 
 #Combine all vd tables
 vd.comb = 
   rbind(
-    data.frame(vd_nasal_asv, dt = "Nasal"),
-    data.frame(vd_oral_asv, dt = "Oral"),
-    data.frame(vd_skin_asv, dt = "Skin"),
-    data.frame(vd_stool_asv, dt = "Stool")    
+    data.frame(vd_nasal_asv2, dt = "Nasal"),
+    data.frame(vd_oral_asv2, dt = "Oral"),
+    data.frame(vd_skin_asv2, dt = "Skin"),
+    data.frame(vd_stool_asv2, dt = "Stool")    
   ) %>% 
   dplyr::filter(!is.na(random_Subject) & !is.na(random_Residual))
 
@@ -44,7 +44,7 @@ vd.comb %>%
   dplyr::filter(!is.na(ICC))
 
 library(reshape2)
-pd = vd.comb[, 7:8]
+pd = vd.comb[, 4:5]
 pd$Variables = rownames(pd)
 pd <- melt(pd)
 
@@ -90,13 +90,13 @@ ggplot(data = pd, aes(x = dt, y = value)) +
     test = "wilcox.test",
     map_signif_level = TRUE
   )
-
 plot
 
 setwd(masstools::get_project_wd())
-setwd("data_analysis/ICC")
+dir.create("data_analysis/ICC_without_confounder")
+setwd("data_analysis/ICC_without_confounder")
 plot
-# ggsave(plot, filename = "icc_of_different_body_site_microbiome_asv.pdf", width = 9, height = 7)
+# ggsave(plot, filename = "icc_of_different_body_site_microbiome_asv2.pdf", width = 9, height = 7)
 
 pd_asv = pd
 
@@ -115,18 +115,18 @@ pd_asv = pd
 
 ###Class
 ####load data class level
-load(here::here("data_analysis/nasal_microbiome/ICC/vd_nasal_class"))
-load(here::here("data_analysis/oral_microbiome/ICC/vd_oral_class"))
-load(here::here("data_analysis/skin_microbiome/ICC/vd_skin_class"))
-load(here::here("data_analysis/stool_microbiome/ICC/vd_stool_class"))
+load(here::here("data_analysis/nasal_microbiome/ICC_without_confounder/vd_nasal_class2"))
+load(here::here("data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_class2"))
+load(here::here("data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_class2"))
+load(here::here("data_analysis/stool_microbiome/ICC_without_confounder/vd_stool_class2"))
 
 #Combine all vd tables
 vd.comb = 
   rbind(
-    data.frame(vd_nasal_class, dt = "Nasal"),
-    data.frame(vd_oral_class, dt = "Oral"),
-    data.frame(vd_skin_class, dt = "Skin"),
-    data.frame(vd_stool_class, dt = "Stool")    
+    data.frame(vd_nasal_class2, dt = "Nasal"),
+    data.frame(vd_oral_class2, dt = "Oral"),
+    data.frame(vd_skin_class2, dt = "Skin"),
+    data.frame(vd_stool_class2, dt = "Stool")    
   ) %>% 
   dplyr::filter(!is.na(random_Subject) & !is.na(random_Residual))
 
@@ -136,7 +136,7 @@ vd.comb =
   dplyr::filter(!is.na(ICC))
 
 library(reshape2)
-pd = vd.comb[, 7:8]
+pd = vd.comb[, 4:5]
 pd$Variables = rownames(pd)
 pd <- melt(pd)
 
@@ -184,7 +184,7 @@ plot =
   )
 plot
 
-# ggsave(plot, filename = "icc_of_different_body_site_microbiome_class.pdf", width = 9, height = 7)
+# ggsave(plot, filename = "icc_of_different_body_site_microbiome_class2.pdf", width = 9, height = 7)
 
 pd_class = pd
 
@@ -205,18 +205,18 @@ pd_class = pd
 
 ###family
 ####load data family level
-load(here::here("data_analysis/nasal_microbiome/ICC/vd_nasal_family"))
-load(here::here("data_analysis/oral_microbiome/ICC/vd_oral_family"))
-load(here::here("data_analysis/skin_microbiome/ICC/vd_skin_family"))
-load(here::here("data_analysis/stool_microbiome/ICC/vd_stool_family"))
+load(here::here("data_analysis/nasal_microbiome/ICC_without_confounder/vd_nasal_family2"))
+load(here::here("data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_family2"))
+load(here::here("data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_family2"))
+load(here::here("data_analysis/stool_microbiome/ICC_without_confounder/vd_stool_family2"))
 
 #Combine all vd tables
 vd.comb = 
   rbind(
-    data.frame(vd_nasal_family, dt = "Nasal"),
-    data.frame(vd_oral_family, dt = "Oral"),
-    data.frame(vd_skin_family, dt = "Skin"),
-    data.frame(vd_stool_family, dt = "Stool")    
+    data.frame(vd_nasal_family2, dt = "Nasal"),
+    data.frame(vd_oral_family2, dt = "Oral"),
+    data.frame(vd_skin_family2, dt = "Skin"),
+    data.frame(vd_stool_family2, dt = "Stool")    
   ) %>% 
   dplyr::filter(!is.na(random_Subject) & !is.na(random_Residual))
 
@@ -226,7 +226,7 @@ vd.comb =
   dplyr::filter(!is.na(ICC))
 
 library(reshape2)
-pd = vd.comb[, 7:8]
+pd = vd.comb[, 4:5]
 pd$Variables = rownames(pd)
 pd <- melt(pd)
 
@@ -274,7 +274,7 @@ plot =
   )
 plot
 
-# ggsave(plot, filename = "icc_of_different_body_site_microbiome_family.pdf", width = 9, height = 7)
+# ggsave(plot, filename = "icc_of_different_body_site_microbiome_family2.pdf", width = 9, height = 7)
 
 pd_family = pd
 
@@ -292,18 +292,18 @@ pd_family = pd
 
 ###genus
 ####load data genus level
-load(here::here("data_analysis/nasal_microbiome/ICC/vd_nasal_genus"))
-load(here::here("data_analysis/oral_microbiome/ICC/vd_oral_genus"))
-load(here::here("data_analysis/skin_microbiome/ICC/vd_skin_genus"))
-load(here::here("data_analysis/stool_microbiome/ICC/vd_stool_genus"))
+load(here::here("data_analysis/nasal_microbiome/ICC_without_confounder/vd_nasal_genus2"))
+load(here::here("data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_genus2"))
+load(here::here("data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_genus2"))
+load(here::here("data_analysis/stool_microbiome/ICC_without_confounder/vd_stool_genus2"))
 
 #Combine all vd tables
 vd.comb = 
   rbind(
-    data.frame(vd_nasal_genus, dt = "Nasal"),
-    data.frame(vd_oral_genus, dt = "Oral"),
-    data.frame(vd_skin_genus, dt = "Skin"),
-    data.frame(vd_stool_genus, dt = "Stool")    
+    data.frame(vd_nasal_genus2, dt = "Nasal"),
+    data.frame(vd_oral_genus2, dt = "Oral"),
+    data.frame(vd_skin_genus2, dt = "Skin"),
+    data.frame(vd_stool_genus2, dt = "Stool")    
   ) %>% 
   dplyr::filter(!is.na(random_Subject) & !is.na(random_Residual))
 
@@ -313,7 +313,7 @@ vd.comb =
   dplyr::filter(!is.na(ICC))
 
 library(reshape2)
-pd = vd.comb[, 7:8]
+pd = vd.comb[, 4:5]
 pd$Variables = rownames(pd)
 pd <- melt(pd)
 
@@ -361,7 +361,7 @@ plot =
   )
 plot
 
-# ggsave(plot, filename = "icc_of_different_body_site_microbiome_genus.pdf", width = 9, height = 7)
+# ggsave(plot, filename = "icc_of_different_body_site_microbiome_genus2.pdf", width = 9, height = 7)
 
 pd_genus = pd
 
@@ -379,18 +379,18 @@ pd_genus = pd
 
 ###order
 ####load data order level
-load(here::here("data_analysis/nasal_microbiome/ICC/vd_nasal_order"))
-load(here::here("data_analysis/oral_microbiome/ICC/vd_oral_order"))
-load(here::here("data_analysis/skin_microbiome/ICC/vd_skin_order"))
-load(here::here("data_analysis/stool_microbiome/ICC/vd_stool_order"))
+load(here::here("data_analysis/nasal_microbiome/ICC_without_confounder/vd_nasal_order2"))
+load(here::here("data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_order2"))
+load(here::here("data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_order2"))
+load(here::here("data_analysis/stool_microbiome/ICC_without_confounder/vd_stool_order2"))
 
 #Combine all vd tables
 vd.comb = 
   rbind(
-    data.frame(vd_nasal_order, dt = "Nasal"),
-    data.frame(vd_oral_order, dt = "Oral"),
-    data.frame(vd_skin_order, dt = "Skin"),
-    data.frame(vd_stool_order, dt = "Stool")    
+    data.frame(vd_nasal_order2, dt = "Nasal"),
+    data.frame(vd_oral_order2, dt = "Oral"),
+    data.frame(vd_skin_order2, dt = "Skin"),
+    data.frame(vd_stool_order2, dt = "Stool")    
   ) %>% 
   dplyr::filter(!is.na(random_Subject) & !is.na(random_Residual))
 
@@ -400,7 +400,7 @@ vd.comb =
   dplyr::filter(!is.na(ICC))
 
 library(reshape2)
-pd = vd.comb[, 7:8]
+pd = vd.comb[, 4:5]
 pd$Variables = rownames(pd)
 pd <- melt(pd)
 
@@ -448,7 +448,7 @@ plot =
   )
 plot
 
-# ggsave(plot, filename = "icc_of_different_body_site_microbiome_order.pdf", width = 9, height = 7)
+# ggsave(plot, filename = "icc_of_different_body_site_microbiome_order2.pdf", width = 9, height = 7)
 
 pd_order = pd
 
@@ -466,18 +466,18 @@ pd_order = pd
 
 ###phylum
 ####load data phylum level
-load(here::here("data_analysis/nasal_microbiome/ICC/vd_nasal_phylum"))
-load(here::here("data_analysis/oral_microbiome/ICC/vd_oral_phylum"))
-load(here::here("data_analysis/skin_microbiome/ICC/vd_skin_phylum"))
-load(here::here("data_analysis/stool_microbiome/ICC/vd_stool_phylum"))
+load(here::here("data_analysis/nasal_microbiome/ICC_without_confounder/vd_nasal_phylum2"))
+load(here::here("data_analysis/oral_microbiome/ICC_without_confounder/vd_oral_phylum2"))
+load(here::here("data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_phylum2"))
+load(here::here("data_analysis/stool_microbiome/ICC_without_confounder/vd_stool_phylum2"))
 
 #Combine all vd tables
 vd.comb = 
   rbind(
-    data.frame(vd_nasal_phylum, dt = "Nasal"),
-    data.frame(vd_oral_phylum, dt = "Oral"),
-    data.frame(vd_skin_phylum, dt = "Skin"),
-    data.frame(vd_stool_phylum, dt = "Stool")    
+    data.frame(vd_nasal_phylum2, dt = "Nasal"),
+    data.frame(vd_oral_phylum2, dt = "Oral"),
+    data.frame(vd_skin_phylum2, dt = "Skin"),
+    data.frame(vd_stool_phylum2, dt = "Stool")    
   ) %>% 
   dplyr::filter(!is.na(random_Subject) & !is.na(random_Residual))
 
@@ -487,7 +487,7 @@ vd.comb =
   dplyr::filter(!is.na(ICC))
 
 library(reshape2)
-pd = vd.comb[, 7:8]
+pd = vd.comb[, 4:5]
 pd$Variables = rownames(pd)
 pd <- melt(pd)
 
@@ -535,7 +535,7 @@ plot =
   )
 plot
 
-# ggsave(plot, filename = "icc_of_different_body_site_microbiome_phylum.pdf", width = 9, height = 7)
+# ggsave(plot, filename = "icc_of_different_body_site_microbiome_phylum2.pdf", width = 9, height = 7)
 
 pd_phylum = pd
 
@@ -602,8 +602,14 @@ ggplot(data = temp_data,
   base_theme +
   labs(x = "", y = "ICC of Normalized Variables")
 
+
 library(ggpubr)
 # Box plots
+temp_data$dt <- 
+  factor(x = temp_data$dt, levels = c("Stool", "Skin", "Oral", "Nasal"))
+
+save(temp_data, file = "temp_data")
+
 bxp <- ggboxplot(
   temp_data,
   x = "level",
@@ -638,6 +644,8 @@ bxp <- ggboxplot(
   base_theme +
   labs(x = "", y = "ICC of Normalized Variables")
 bxp
+
+ggsave(bxp, filename = "icc_plot.pdf", width = 12, height = 7)
 
 library(rstatix)
 
@@ -698,8 +706,374 @@ bxp2 +
 bxp3
 bxp2
 
-# ggsave(bxp3, filename = "icc_plot.pdf", width = 8, height = 12)
+# ggsave(bxp3, filename = "icc_plot2.pdf", width = 12, height = 7)
 
-bxp2
-bxp3
+temp_data
 
+icc_data <- temp_data
+# save(icc_data, file = "icc_data")
+
+# 
+# #######only for nasal
+# ###nasal variable information
+# load(here::here("data_analysis/nasal_microbiome/data_preparation/variable_info"))
+# 
+# nasal_microbiome_variable_info = variable_info
+# 
+# nasal_microbiome_variable_info
+# 
+# temp_data_nasal =
+#   temp_data %>%
+#   dplyr::filter(dt == "Nasal")
+# 
+# segment_data1 = 
+#   nasal_microbiome_variable_info[,c("Genus", "variable_id")] %>% 
+#   dplyr::rename(ASV = variable_id) %>% 
+#   dplyr::left_join(temp_data_nasal %>% 
+#                      dplyr::filter(level == "Genus") %>% 
+#                      dplyr::select(Variables, value), by = c("Genus" = "Variables")) %>% 
+#   dplyr::rename(value1 = value) %>% 
+#   dplyr::left_join(temp_data_nasal %>% 
+#                      dplyr::filter(level == "ASV") %>% 
+#                      dplyr::select(Variables, value), by = c("ASV" = "Variables")) %>% 
+#   dplyr::rename(value2 = value) %>% 
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data2 =
+#   nasal_microbiome_variable_info[, c("Family", "Genus")] %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Family") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Family" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Genus") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Genus" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data3 =
+#   nasal_microbiome_variable_info[, c("Order", "Family")] %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Order") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Order" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Family") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Family" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data4 =
+#   nasal_microbiome_variable_info[, c("Class", "Order")] %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Class") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Class" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Order") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Order" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data5 =
+#   nasal_microbiome_variable_info[, c("Phylum", "Class")] %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Phylum") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Phylum" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_nasal %>%
+#       dplyr::filter(level == "Class") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Class" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+#   
+# 
+# temp_data_nasal %>%
+#   ggplot(x = level,
+#          y = value,
+#          color = dt) +
+#   geom_boxplot(
+#     aes(x = level,
+#         y = value,
+#         color = dt),
+#     alpha = 0.7,
+#     show.legend = FALSE,
+#     outlier.shape = NA
+#   ) +
+#   geom_segment(data = segment_data1,
+#                aes(
+#                  x = "Genus",
+#                  y = value1,
+#                  xend = "ASV",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data2,
+#                aes(
+#                  x = "Family",
+#                  y = value1,
+#                  xend = "Genus",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data3,
+#                aes(
+#                  x = "Order",
+#                  y = value1,
+#                  xend = "Family",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data4,
+#                aes(
+#                  x = "Class",
+#                  y = value1,
+#                  xend = "Order",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data5,
+#                aes(
+#                  x = "Phylum",
+#                  y = value1,
+#                  xend = "Class",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_point(
+#     aes(x = level,
+#         y = value),
+#     alpha = 1,
+#     shape = 16,
+#     size = 2,
+#     show.legend = FALSE
+#   ) +
+#   scale_color_manual(values = body_site_color[-5]) +
+#   base_theme +
+#   labs(x = "", y = "ICC of Normalized Variables")
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# #######only for skin
+# ###skin variable information
+# load(here::here("data_analysis/skin_microbiome/data_preparation/variable_info"))
+# 
+# skin_microbiome_variable_info = variable_info
+# 
+# skin_microbiome_variable_info
+# 
+# temp_data_skin =
+#   temp_data %>%
+#   dplyr::filter(dt == "Skin")
+# 
+# segment_data1 = 
+#   skin_microbiome_variable_info[,c("Genus", "variable_id")] %>% 
+#   dplyr::rename(ASV = variable_id) %>% 
+#   dplyr::left_join(temp_data_skin %>% 
+#                      dplyr::filter(level == "Genus") %>% 
+#                      dplyr::select(Variables, value), by = c("Genus" = "Variables")) %>% 
+#   dplyr::rename(value1 = value) %>% 
+#   dplyr::left_join(temp_data_skin %>% 
+#                      dplyr::filter(level == "ASV") %>% 
+#                      dplyr::select(Variables, value), by = c("ASV" = "Variables")) %>% 
+#   dplyr::rename(value2 = value) %>% 
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data2 =
+#   skin_microbiome_variable_info[, c("Family", "Genus")] %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Family") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Family" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Genus") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Genus" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data3 =
+#   skin_microbiome_variable_info[, c("Order", "Family")] %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Order") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Order" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Family") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Family" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data4 =
+#   skin_microbiome_variable_info[, c("Class", "Order")] %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Class") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Class" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Order") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Order" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# segment_data5 =
+#   skin_microbiome_variable_info[, c("Phylum", "Class")] %>%
+#   dplyr::distinct(.keep_all = TRUE) %>% 
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Phylum") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Phylum" = "Variables")
+#   ) %>%
+#   dplyr::rename(value1 = value) %>%
+#   dplyr::left_join(
+#     temp_data_skin %>%
+#       dplyr::filter(level == "Class") %>%
+#       dplyr::select(Variables, value),
+#     by = c("Class" = "Variables")
+#   ) %>%
+#   dplyr::rename(value2 = value) %>%
+#   dplyr::filter(!is.na(value1) & !is.na(value2)) %>% 
+#   dplyr::distinct(.keep_all = TRUE)
+# 
+# 
+# temp_data_skin %>%
+#   ggplot(x = level,
+#          y = value,
+#          color = dt) +
+#   geom_boxplot(
+#     aes(x = level,
+#         y = value,
+#         color = dt),
+#     alpha = 0.7,
+#     show.legend = FALSE,
+#     outlier.shape = NA
+#   ) +
+#   geom_segment(data = segment_data1,
+#                aes(
+#                  x = "Genus",
+#                  y = value1,
+#                  xend = "ASV",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data2,
+#                aes(
+#                  x = "Family",
+#                  y = value1,
+#                  xend = "Genus",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data3,
+#                aes(
+#                  x = "Order",
+#                  y = value1,
+#                  xend = "Family",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data4,
+#                aes(
+#                  x = "Class",
+#                  y = value1,
+#                  xend = "Order",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_segment(data = segment_data5,
+#                aes(
+#                  x = "Phylum",
+#                  y = value1,
+#                  xend = "Class",
+#                  yend = value2
+#                ),
+#                color = "grey") +
+#   geom_point(
+#     aes(x = level,
+#         y = value),
+#     alpha = 1,
+#     shape = 16,
+#     size = 2,
+#     show.legend = FALSE
+#   ) +
+#   scale_color_manual(values = body_site_color[-5]) +
+#   base_theme +
+#   labs(x = "", y = "ICC of Normalized Variables")
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 

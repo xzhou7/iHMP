@@ -1,5 +1,5 @@
 #' ---
-#' title: "nasal microbiome metabolome correlation"
+#' title: "skin microbiome metabolome correlation"
 #' author: 
 #'   - name: "Xiaotao Shen" 
 #'     url: https://www.shenxt.info/
@@ -13,7 +13,7 @@
 
 #+ r setup, echo=TRUE, eval = TRUE, include = TRUE
 
-no_function()
+# no_function()
 # set work directory
 
 setwd(masstools::get_project_wd())
@@ -39,9 +39,9 @@ myVD <- function(ds, trans){
   htb = as.data.frame(htb)
   vd = {}
   for (i in 8:ncol(htb)) {
-    if (trans == "Original") {model <- tryCatch(lmer(scale(htb[, i]) ~ 1 + Days + A1C + SSPG + FPG + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
-    if (trans == "Log10") {model <- tryCatch(lmer(scale(log10(htb[, i])) ~ 1 + Days + A1C + SSPG + FPG + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
-    if (trans == "Arcsin") {model <- tryCatch(lmer(scale(asin(sqrt(htb[, i]))) ~ 1 + Days + A1C + SSPG + FPG + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
+    if (trans == "Original") {model <- tryCatch(lmer(scale(htb[, i]) ~ 1 + Days + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
+    if (trans == "Log10") {model <- tryCatch(lmer(scale(log10(htb[, i])) ~ 1 + Days + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
+    if (trans == "Arcsin") {model <- tryCatch(lmer(scale(asin(sqrt(htb[, i]))) ~ 1 + Days + (1|SubjectID), data = htb, REML = FALSE), error=function(err) NA)}
     if (!is.na(model)) {
       v.var = as.data.frame(VarCorr(model), comp=c("Variance"))[, 4] #Extracting random effect variances
       v.var <- c(v.var, as.data.frame(anova(model))[, 2]) #Extracting Sum Sq for fixed effects
@@ -53,226 +53,9 @@ myVD <- function(ds, trans){
   }
   rownames(vd) <- colnames(htb)[-c(1:7)]
   vd <- as.data.frame(vd)
-  colnames(vd) <- c("random_Subject", "random_Residual", "fix_Days", "fix_A1C", "fix_SSPG", "fix_FPG")
+  colnames(vd) <- c("random_Subject", "random_Residual")
   return(vd)
 } #End of function
-
-
-####----------------------------------------------------------------------------
-####Phylum level
-#######
-####load data
-load(here::here("data/from_xin/Revision_MultiOmes_0509.RData"))
-clinic.sc = merge(clinic.df, sc, by = "SubjectID")
-clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
-a1c.df = clinic.sc %>% 
-  dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
-
-skin_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/SK/Phylum_SK.csv")) %>% 
-  dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:SubjectID)) %>% 
-  as.data.frame()
-
-idx = 
-  skin_microbiome_expression_data %>% 
-  dplyr::select(-SampleID) %>% 
-  apply(2, function(x){
-    sum(x != 0)/(nrow(skin_microbiome_expression_data))
-  }) %>% 
-  `>=`(0.2) %>% 
-  which() %>% 
-  `+`(1)
-length(idx)
-skin_microbiome_expression_data = 
-  skin_microbiome_expression_data[,c(1, idx)]
-
-#16S_nasal
-ds =
-  skin_microbiome_expression_data %>% 
-  dplyr::left_join(a1c.df, by = "SampleID") %>% 
-  dplyr::filter(!is.na(SSPG) & 
-                  !is.na(A1C) & 
-                  !is.na(FPG)) %>% 
-  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
-
-vd_skin_phylum = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/skin_microbiome/ICC/")
-save(vd_skin_phylum, file = "data_analysis/skin_microbiome/ICC/vd_skin_phylum")
-
-
-####----------------------------------------------------------------------------
-####order level
-#######
-####load data
-load(here::here("data/from_xin/Revision_MultiOmes_0509.RData"))
-clinic.sc = merge(clinic.df, sc, by = "SubjectID")
-clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
-a1c.df = clinic.sc %>% 
-  dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
-
-skin_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/SK/Order_SK.csv")) %>% 
-  dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:SubjectID)) %>% 
-  as.data.frame()
-
-idx = 
-  skin_microbiome_expression_data %>% 
-  dplyr::select(-SampleID) %>% 
-  apply(2, function(x){
-    sum(x != 0)/(nrow(skin_microbiome_expression_data))
-  }) %>% 
-  `>=`(0.2) %>% 
-  which() %>% 
-  `+`(1)
-
-skin_microbiome_expression_data = 
-  skin_microbiome_expression_data[,c(1, idx)]
-
-#16S_nasal
-ds =
-  skin_microbiome_expression_data %>% 
-  dplyr::left_join(a1c.df, by = "SampleID") %>% 
-  dplyr::filter(!is.na(SSPG) & 
-                  !is.na(A1C) & 
-                  !is.na(FPG)) %>% 
-  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
-
-vd_skin_order = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/skin_microbiome/ICC/")
-save(vd_skin_order, file = "data_analysis/skin_microbiome/ICC/vd_skin_order")
-
-
-####----------------------------------------------------------------------------
-####genus level
-#######
-####load data
-load(here::here("data/from_xin/Revision_MultiOmes_0509.RData"))
-clinic.sc = merge(clinic.df, sc, by = "SubjectID")
-clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
-a1c.df = clinic.sc %>% 
-  dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
-
-skin_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/SK/Genus_SK.csv")) %>% 
-  dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:SubjectID)) %>% 
-  as.data.frame()
-
-idx = 
-  skin_microbiome_expression_data %>% 
-  dplyr::select(-SampleID) %>% 
-  apply(2, function(x){
-    sum(x != 0)/(nrow(skin_microbiome_expression_data))
-  }) %>% 
-  `>=`(0.2) %>% 
-  which() %>% 
-  `+`(1)
-
-length(idx)
-skin_microbiome_expression_data = 
-  skin_microbiome_expression_data[,c(1, idx)]
-
-#16S_nasal
-ds =
-  skin_microbiome_expression_data %>% 
-  dplyr::left_join(a1c.df, by = "SampleID") %>% 
-  dplyr::filter(!is.na(SSPG) & 
-                  !is.na(A1C) & 
-                  !is.na(FPG)) %>% 
-  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
-
-vd_skin_genus = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/skin_microbiome/ICC/")
-save(vd_skin_genus, file = "data_analysis/skin_microbiome/ICC/vd_skin_genus")
-
-
-
-####----------------------------------------------------------------------------
-####family level
-#######
-####load data
-load(here::here("data/from_xin/Revision_MultiOmes_0509.RData"))
-clinic.sc = merge(clinic.df, sc, by = "SubjectID")
-clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
-a1c.df = clinic.sc %>% 
-  dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
-
-skin_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/SK/Family_SK.csv")) %>% 
-  dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:SubjectID)) %>% 
-  as.data.frame()
-
-idx = 
-  skin_microbiome_expression_data %>% 
-  dplyr::select(-SampleID) %>% 
-  apply(2, function(x){
-    sum(x != 0)/(nrow(skin_microbiome_expression_data))
-  }) %>% 
-  `>=`(0.2) %>% 
-  which() %>% 
-  `+`(1)
-length(idx)
-skin_microbiome_expression_data = 
-  skin_microbiome_expression_data[,c(1, idx)]
-
-#16S_nasal
-ds =
-  skin_microbiome_expression_data %>% 
-  dplyr::left_join(a1c.df, by = "SampleID") %>% 
-  dplyr::filter(!is.na(SSPG) & 
-                  !is.na(A1C) & 
-                  !is.na(FPG)) %>% 
-  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
-
-vd_skin_family = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/skin_microbiome/ICC/")
-save(vd_skin_family, file = "data_analysis/skin_microbiome/ICC/vd_skin_family")
-
-
-####----------------------------------------------------------------------------
-####class level
-#######
-####load data
-load(here::here("data/from_xin/Revision_MultiOmes_0509.RData"))
-clinic.sc = merge(clinic.df, sc, by = "SubjectID")
-clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
-a1c.df = clinic.sc %>% 
-  dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
-
-skin_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/SK/Class_SK.csv")) %>% 
-  dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:SubjectID)) %>% 
-  as.data.frame()
-
-idx = 
-  skin_microbiome_expression_data %>% 
-  dplyr::select(-SampleID) %>% 
-  apply(2, function(x){
-    sum(x != 0)/(nrow(skin_microbiome_expression_data))
-  }) %>% 
-  `>=`(0.2) %>% 
-  which() %>% 
-  `+`(1)
-length(idx)
-skin_microbiome_expression_data = 
-  skin_microbiome_expression_data[,c(1, idx)]
-length(idx)
-#16S_nasal
-ds =
-  skin_microbiome_expression_data %>% 
-  dplyr::left_join(a1c.df, by = "SampleID") %>% 
-  dplyr::filter(!is.na(SSPG) & 
-                  !is.na(A1C) & 
-                  !is.na(FPG)) %>% 
-  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
-
-vd_skin_class = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/skin_microbiome/ICC/")
-save(vd_skin_class, file = "data_analysis/skin_microbiome/ICC/vd_skin_class")
 
 
 ####----------------------------------------------------------------------------
@@ -285,10 +68,10 @@ clinic.sc[, 62:63] <- apply(clinic.sc[, 62:63], 2, function(x) as.numeric(x))
 a1c.df = clinic.sc %>% 
   dplyr::select(c(SubjectID,SampleID,A1C, SSPG, FPG, CL4, CollectionDate))
 
-skin_microbiome_expression_data = 
-  data.table::fread(here::here("data/from_xin/Genus Table/SK/ASV_SK.csv")) %>% 
-  dplyr::select(SampleID, everything()) %>% 
-  dplyr::select(-c(V1:SubjectID)) %>% 
+skin_microbiome_expression_data =
+  data.table::fread(here::here("data/from_xin/Genus Table/SK/ASV_SK.csv")) %>%
+  dplyr::select(SampleID, everything()) %>%
+  dplyr::select(-c(V1:SubjectID)) %>%
   as.data.frame()
 
 idx = 
@@ -297,14 +80,16 @@ idx =
   apply(2, function(x){
     sum(x != 0)/nrow(skin_microbiome_expression_data)
   }) %>% 
-  `>=`(0.2) %>% 
+  `>=`(0.1) %>% 
   which() %>% 
   `+`(1)
+
 length(idx)
+
 skin_microbiome_expression_data = 
   skin_microbiome_expression_data[,c(1, idx)]
 
-#16S_nasal
+#16S_skin
 ds =
   skin_microbiome_expression_data %>% 
   dplyr::left_join(a1c.df, by = "SampleID") %>% 
@@ -313,8 +98,169 @@ ds =
                   !is.na(FPG)) %>% 
   dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
 
-vd_skin_asv = myVD(ds = ds, trans = "Arcsin")
-dir.create("data_analysis/skin_microbiome/ICC/")
-save(vd_skin_asv, file = "data_analysis/skin_microbiome/ICC/vd_skin_asv")
+vd_skin_asv2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/skin_microbiome/ICC_without_confounder/")
+save(vd_skin_asv2, file = "data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_asv2")
+
+###load variable_info
+
+load(here::here("data_analysis/skin_microbiome/data_preparation/variable_info"))
+
+# variable_info =
+# variable_info %>% 
+#   dplyr::filter(variable_id %in% rownames(vd_skin_asv2))
+
+####----------------------------------------------------------------------------
+####Phylum level
+#######
+####load data
+skin_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/SK/Phylum_SK.csv")) %>% 
+  dplyr::select(SampleID, everything()) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
+  as.data.frame()
+
+idx = 
+which(colnames(skin_microbiome_expression_data) %in% variable_info$Phylum)
+length(idx)
+
+skin_microbiome_expression_data = 
+  skin_microbiome_expression_data[,c(1, idx)]
+
+#16S_skin
+ds =
+skin_microbiome_expression_data %>% 
+  dplyr::left_join(a1c.df, by = "SampleID") %>% 
+  dplyr::filter(!is.na(SSPG) & 
+                  !is.na(A1C) & 
+                  !is.na(FPG)) %>% 
+  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
+
+vd_skin_phylum2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/skin_microbiome/ICC_without_confounder/")
+save(vd_skin_phylum2, file = "data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_phylum2")
+
+
+####----------------------------------------------------------------------------
+####order level
+#######
+####load data
+skin_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/SK/Order_SK.csv")) %>% 
+  dplyr::select(SampleID, everything()) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
+  as.data.frame()
+
+idx = 
+  which(colnames(skin_microbiome_expression_data) %in% variable_info$Order) 
+  
+skin_microbiome_expression_data = 
+  skin_microbiome_expression_data[,c(1, idx)]
+
+#16S_skin
+ds =
+  skin_microbiome_expression_data %>% 
+  dplyr::left_join(a1c.df, by = "SampleID") %>% 
+  dplyr::filter(!is.na(SSPG) & 
+                  !is.na(A1C) & 
+                  !is.na(FPG)) %>% 
+  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
+
+vd_skin_order2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/skin_microbiome/ICC_without_confounder/")
+save(vd_skin_order2, file = "data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_order2")
+
+####----------------------------------------------------------------------------
+####genus level
+#######
+####load data
+skin_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/SK/Genus_SK.csv")) %>% 
+  dplyr::select(SampleID, everything()) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
+  as.data.frame()
+
+idx = 
+  which(colnames(skin_microbiome_expression_data) %in% variable_info$Genus)
+  
+length(idx)
+skin_microbiome_expression_data = 
+  skin_microbiome_expression_data[,c(1, idx)]
+
+#16S_skin
+ds =
+  skin_microbiome_expression_data %>% 
+  dplyr::left_join(a1c.df, by = "SampleID") %>% 
+  dplyr::filter(!is.na(SSPG) & 
+                  !is.na(A1C) & 
+                  !is.na(FPG)) %>% 
+  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
+
+vd_skin_genus2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/skin_microbiome/ICC_without_confounder/")
+save(vd_skin_genus2, file = "data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_genus2")
+
+
+####----------------------------------------------------------------------------
+####family level
+#######
+####load data
+skin_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/SK/Family_SK.csv")) %>% 
+  dplyr::select(SampleID, everything()) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
+  as.data.frame()
+
+idx = 
+  which(colnames(skin_microbiome_expression_data) %in% variable_info$Family)
+  
+length(idx)
+skin_microbiome_expression_data = 
+  skin_microbiome_expression_data[,c(1, idx)]
+
+#16S_skin
+ds =
+  skin_microbiome_expression_data %>% 
+  dplyr::left_join(a1c.df, by = "SampleID") %>% 
+  dplyr::filter(!is.na(SSPG) & 
+                  !is.na(A1C) & 
+                  !is.na(FPG)) %>% 
+  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
+
+vd_skin_family2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/skin_microbiome/ICC_without_confounder/")
+save(vd_skin_family2, file = "data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_family2")
+
+
+####----------------------------------------------------------------------------
+####class level
+#######
+####load data
+skin_microbiome_expression_data = 
+  data.table::fread(here::here("data/from_xin/Genus Table/SK/Class_SK.csv")) %>% 
+  dplyr::select(SampleID, everything()) %>% 
+  dplyr::select(-c(V1:SubjectID)) %>% 
+  as.data.frame()
+
+idx = 
+  which(colnames(skin_microbiome_expression_data) %in% variable_info$Class)
+  
+skin_microbiome_expression_data = 
+  skin_microbiome_expression_data[,c(1, idx)]
+length(idx)
+#16S_skin
+ds =
+  skin_microbiome_expression_data %>% 
+  dplyr::left_join(a1c.df, by = "SampleID") %>% 
+  dplyr::filter(!is.na(SSPG) & 
+                  !is.na(A1C) & 
+                  !is.na(FPG)) %>% 
+  dplyr::select(SubjectID, SampleID,A1C, SSPG, FPG, CL4, CollectionDate, everything())
+
+vd_skin_class2 = myVD(ds = ds, trans = "Arcsin")
+dir.create("data_analysis/skin_microbiome/ICC_without_confounder/")
+save(vd_skin_class2, file = "data_analysis/skin_microbiome/ICC_without_confounder/vd_skin_class2")
+
+
 
 
