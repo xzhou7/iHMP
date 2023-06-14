@@ -13,10 +13,10 @@ source("code/tools.R")
 ######work directory
 setwd(masstools::get_project_wd())
 dir.create(
-  "data_analysis/cytokine_affect_microbiome/IR/cytokine_nasal_microbiome",
+  "data_analysis/cytokine_affect_microbiome/IS/cytokine_nasal_microbiome",
   recursive = TRUE
 )
-setwd("data_analysis/cytokine_affect_microbiome/IR/cytokine_nasal_microbiome")
+setwd("data_analysis/cytokine_affect_microbiome/IS/cytokine_nasal_microbiome")
 
 ####load data
 ###nasal microbiome
@@ -49,7 +49,7 @@ expression_data =
 
 nasal_microbiome_variable_info =
   nasal_microbiome_variable_info[match(rownames(expression_data),
-                                       nasal_microbiome_variable_info$Genus), ]
+                                       nasal_microbiome_variable_info$Genus),]
 
 nasal_microbiome_variable_info$Genus == rownames(expression_data)
 
@@ -57,8 +57,8 @@ nasal_microbiome_variable_info$Genus == rownames(expression_data)
 remove_idx = which(is.na(nasal_microbiome_variable_info$Genus))
 remove_idx
 if (length(remove_idx) > 0) {
-  nasal_microbiome_variable_info = nasal_microbiome_variable_info[-remove_idx, ]
-  expression_data = expression_data[-remove_idx, ]
+  nasal_microbiome_variable_info = nasal_microbiome_variable_info[-remove_idx,]
+  expression_data = expression_data[-remove_idx,]
 }
 
 rownames(expression_data) = nasal_microbiome_variable_info$variable_id
@@ -71,7 +71,7 @@ nasal_microbiome_variable_info =
   dplyr::filter(!stringr::str_detect(Genus, "Unclassified_Bacteria"))
 
 nasal_microbiome_expression_data =
-  nasal_microbiome_expression_data[nasal_microbiome_variable_info$variable_id, ]
+  nasal_microbiome_expression_data[nasal_microbiome_variable_info$variable_id,]
 
 dim(nasal_microbiome_sample_info)
 dim(nasal_microbiome_variable_info)
@@ -81,7 +81,7 @@ colnames(nasal_microbiome_expression_data) == nasal_microbiome_sample_info$sampl
 
 nasal_microbiome_sample_info =
   nasal_microbiome_sample_info %>%
-  dplyr::filter(IRIS == "IR")
+  dplyr::filter(IRIS == "IS")
 
 nasal_microbiome_expression_data =
   nasal_microbiome_expression_data[, nasal_microbiome_sample_info$sample_id]
@@ -129,10 +129,10 @@ cytokine_expression_data =
   cytokine_expression_data[, intersect_sample_id]
 
 nasal_microbiome_sample_info =
-  nasal_microbiome_sample_info[match(intersect_sample_id, nasal_microbiome_sample_info$sample_id), ]
+  nasal_microbiome_sample_info[match(intersect_sample_id, nasal_microbiome_sample_info$sample_id),]
 
 cytokine_sample_info =
-  cytokine_sample_info[match(intersect_sample_id, cytokine_sample_info$sample_id), ]
+  cytokine_sample_info[match(intersect_sample_id, cytokine_sample_info$sample_id),]
 
 length(unique(cytokine_sample_info$subject_id))
 
@@ -163,7 +163,7 @@ nasal_microbiome_expression_data =
 remain_idx =
   which(rowSums(nasal_microbiome_expression_data) > 0)
 
-nasal_microbiome_expression_data = nasal_microbiome_expression_data[remain_idx, ]
+nasal_microbiome_expression_data = nasal_microbiome_expression_data[remain_idx,]
 nasal_microbiome_variable_info = nasal_microbiome_variable_info[remain_idx, , drop = FALSE]
 
 remain_idx =
@@ -176,29 +176,11 @@ remain_idx =
 
 length(remain_idx)
 
-nasal_microbiome_expression_data = nasal_microbiome_expression_data[remain_idx, ]
+nasal_microbiome_expression_data = nasal_microbiome_expression_data[remain_idx,]
 nasal_microbiome_variable_info = nasal_microbiome_variable_info[remain_idx, , drop = FALSE]
 
 ##save data
-load(
-  here::here(
-    "data_analysis/mediation_analysis/Previous_Version/sample_wise_IR/nasal_microbiome_vs_cytokine/mediation_result"
-  )
-)
-
 {
-  # idx1 <-
-  #   match(unique(mediation_result$treat), nasal_microbiome_variable_info$variable_id)
-  # idx2 <-
-  #   match(unique(mediation_result$mediator), cytokine_variable_info$variable_id)
-  # idx1
-  # idx2
-  #
-  # cytokine_expression_data <-
-  #   cytokine_expression_data[idx2,]
-  # cytokine_variable_info <-
-  #   cytokine_variable_info[idx2,]
-  
   save(nasal_microbiome_expression_data, file = "nasal_microbiome_expression_data")
   save(nasal_microbiome_variable_info, file = "nasal_microbiome_variable_info")
   save(nasal_microbiome_sample_info, file = "nasal_microbiome_sample_info")
@@ -233,7 +215,7 @@ pca_object <-
   )
 
 idx <-
-  which(summary(pca_object)$importance[3, ] > 0.8)[1]
+  which(summary(pca_object)$importance[3,] > 0.8)[1]
 
 temp_data =
   summary(pca_object)$importance[, 1:31] %>%
@@ -271,10 +253,8 @@ plot =
     vjust = 1
   ))
 plot
-ggsave(plot,
-       filename = "nasal_microbiome_pca_pc.pdf",
-       width = 9,
-       height = 7)
+# ggsave(plot, filename = "nasal_microbiome_pca_pc.pdf",
+#        width = 9, height = 7)
 
 
 x = pca_object$x[, c(1:idx)] %>%
@@ -308,7 +288,7 @@ pca_object <-
   )
 
 idx <-
-  which(summary(pca_object)$importance[3, ] > 0.8)[1]
+  which(summary(pca_object)$importance[3,] > 0.8)[1]
 
 temp_data =
   summary(pca_object)$importance[, 1:10] %>%
@@ -381,3 +361,4 @@ total_r2 <-
   unlist()
 save(total_r2, file = "total_r2")
 load("total_r2")
+

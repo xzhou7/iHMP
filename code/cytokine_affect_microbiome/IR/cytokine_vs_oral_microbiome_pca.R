@@ -3,7 +3,7 @@
 no_source()
 
 # set work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())
@@ -11,7 +11,7 @@ rm(list = ls())
 source("code/tools.R")
 
 ######work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 
 dir.create(
   "data_analysis/cytokine_affect_microbiome/IR/cytokine_oral_microbiome",
