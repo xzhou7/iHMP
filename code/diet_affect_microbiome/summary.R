@@ -1,7 +1,7 @@
 no_source()
 
 # set work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(list = ls())
@@ -23,7 +23,7 @@ source("code/tools.R")
 }
 
 ####plot to show
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/diet_affect_microbiome")
 
 library(ggpubr)
@@ -39,7 +39,7 @@ temp_data =
     data.frame(body_site = "Oral",
                r2 = oral_microbiome_total_r2)
   ) %>%
-  dplyr::mutate(body_site = factor(body_site, levels = c("Stool", "Skin", "Oral", "Nasal")))
+  dplyr::mutate(body_site = factor(body_site, levels = c("Skin", "Oral", "Stool", "Nasal")))
 
 my_comparisons <- list(
   c("Skin", "Oral"),
@@ -68,9 +68,9 @@ plot <- ggviolin(
 
 plot
 
-ggsave(plot,
-       filename = "body_site_r2.pdf",
-       width = 9,
-       height = 7)
+# ggsave(plot,
+#        filename = "body_site_r2.pdf",
+#        width = 9,
+#        height = 7)
 
-write.csv(temp_data, "data.csv", row.names = FALSE)
+# write.csv(temp_data, "data.csv", row.names = FALSE)

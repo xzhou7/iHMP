@@ -1,0 +1,8 @@
+# Paths used by many analyses
+
+HMP2_root <- "/path/to/Dropbox (Huttenhower Lab)/HMP2"
+HMP2_data <- file.path(HMP2_root, "data")
+
+if (!dir.exists(HMP2_root)) {
+	stop("Fill in HMP2_root in env_config.r to use the HMP2 scripts!")
+}

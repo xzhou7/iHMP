@@ -1,0 +1,48 @@
+
+PREPROCESSING
+
+1. Residualize datasets (differential_abundance/src/test_DA.R)
+2. Run HAllA (Dropbox/analysis/mechanistic_correlations/halla_runs*.sh)
+3. Run network scripts (mechanistic_correlations/src/cytoscape.jl) for both full and empty models
+
+IMPORT TO CYTOSCAPE
+
+1. Create a new network
+2. File > Import > Network > File...
+   Import the edges.tsv file (use defaults)
+3. File > Import > Table > File...
+   Import the nodes.tsv file (use defaults)
+
+MAIN NETWORK FIGURE
+
+1. Select "interesting_connections_1side"
+2. Select > Nodes > Nodes connected by selected edges
+3. File > New > Network > From selected nodes, selected edges
+4. Layout > Perfuse Force-Directed Layout > (none)
+5. Remove smaller components
+6. Arrange network to final layout
+7. Theme should be HMP2-nolabels
+8. Select "hubs"
+9. Set node bypasses for:
+   - Size: 45
+   - Border Paint: Black
+   - Border Width: 8
+10. Export as PDF
+11. Node names are added in Inkscape
+
+SPECIES SUB-NETWORK
+
+1. Select "subdoli_faecali"
+2. First neighbors of selected nodes
+3. New network from selected nodes
+4. Layout > Perfuse Force-Directed Layout > (none)
+5. Trim cruft and tweak layout
+6. Set style "HMP2-main-w-labels"
+
+HIGHLIGHT NETWORKS
+
+1. Set style to "HMP2-highlight"
+2. Select nodes of interest (filters: "carnitines", "bile_acids", "LPE_MAG")
+3. Set color bypass to green and size to 70
+
+
