@@ -4,7 +4,7 @@
 no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 
@@ -168,7 +168,7 @@ nasal_microbiome_phenotype_cor <-
   dplyr::filter(microbiome %in% intersect_id)
 
 ######work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 dir.create("data_analysis/mediation_analysis/sample_wise_IR/nasal_microbiome_vs_metabolome",
            recursive = TRUE)
 setwd("data_analysis/mediation_analysis/sample_wise_IR/nasal_microbiome_vs_metabolome")

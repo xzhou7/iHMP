@@ -1,7 +1,7 @@
 no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 
@@ -54,7 +54,7 @@ expression_data <-
 colnames(expression_data) <- sample_info$sample_id
 rownames(expression_data) <- variable_info$variable_id
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 save(expression_data,
      file = "data_analysis/phenotype_data_sample_wise/data_preparation/expression_data")
 
@@ -64,7 +64,7 @@ save(variable_info,
 save(sample_info,
      file = "data_analysis/phenotype_data_sample_wise/data_preparation/sample_info")
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("Figures/Figure6/")
 
 subject_phenoty_data <-
@@ -97,7 +97,7 @@ colnames(expression_data) <-
 rownames(expression_data) <-
   variable_info$variable_id
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 save(expression_data, 
      file = "data_analysis/phenotype_data_subject_wise/data_preparation/expression_data")
 save(sample_info, 

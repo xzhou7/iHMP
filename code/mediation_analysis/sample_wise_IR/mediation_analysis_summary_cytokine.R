@@ -4,7 +4,7 @@
 no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 
@@ -573,7 +573,7 @@ nasal_microbiome_metabolome_mediation_result <-
               phenotype_true_name = phenotype)
 
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 dir.create("data_analysis/mediation_analysis/sample_wise_IR/summary", recursive = TRUE)
 setwd("data_analysis/mediation_analysis/sample_wise_IR/summary")
 mediation_result <-
