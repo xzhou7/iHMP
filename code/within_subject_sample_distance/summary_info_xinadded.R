@@ -1,6 +1,6 @@
 ###no source
 no_function()
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 

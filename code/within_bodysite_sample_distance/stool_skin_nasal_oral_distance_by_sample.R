@@ -1,12 +1,12 @@
 ###no source
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 rm(list = ls())
 library(tidyverse)
 library(phyloseq)
 library(cowplot)
 library(parallel)
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 
 source("code/tools.R")
 load("data/from_xin/physeq_clean.rda")
@@ -20,7 +20,6 @@ physeq_nasal = physeq_NS
 
 dir.create("data_analysis/combine_microbiome/within_bodysite_sample_distance/",
            recursive = TRUE)
-
 setwd("data_analysis/combine_microbiome/within_bodysite_sample_distance/")
 
 # #####stool
