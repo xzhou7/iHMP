@@ -3,10 +3,10 @@
 no_source()
 
 # set work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
-rm(lins = ls())
+rm(list = ls())
 
 source("code/tools.R")
 
@@ -189,7 +189,6 @@ skin_microbiome_sample_info$sample_id[910]
 skin_microbiome_sample_info = skin_microbiome_sample_info[-910, ]
 skin_microbiome_expression_data = skin_microbiome_expression_data[, -910]
 
-
 ###stool microbiome
 {
   load("data_analysis/stool_microbiome/data_preparation/sample_info")
@@ -243,9 +242,8 @@ stool_microbiome_expression_data =
 stool_microbiome_variable_info =
   stool_microbiome_variable_info[remain_idx, ]
 
-
 #####set work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/pcva_analysis")
 
 dim(oral_microbiome_expression_data)
@@ -337,18 +335,18 @@ pvcaObj <- pvcaBatchAssess(abatch = data_pvca,
                            batch.factors = batch.factors,
                            threshold = pct_threshold)
 
-save(pvcaObj, file = "pvcaObj")
+# save(pvcaObj, file = "pvcaObj")
 load("pvcaObj")
 
 plot <-
   plot_pvca(object = pvcaObj)
 
 plot
-
-ggsave(plot,
-       filename = "pvca_plot.pdf",
-       height = 9,
-       width = 7)
+# 
+# ggsave(plot,
+#        filename = "pvca_plot.pdf",
+#        height = 9,
+#        width = 7)
 
 counts <- as.matrix(t(temp_data))
 
@@ -373,7 +371,7 @@ pvca_object <-
   )
 
 pvca_object
-save(pvca_object, file = "pvca_object")
+# save(pvca_object, file = "pvca_object")
 load("pvca_object")
 plot <-
   PlotPVCA(pvca.res = pvca_object, title = "")

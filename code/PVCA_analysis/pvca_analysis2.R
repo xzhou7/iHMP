@@ -3,7 +3,7 @@
 no_source()
 
 # set work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 library(phyloseq)
 rm(lins = ls())

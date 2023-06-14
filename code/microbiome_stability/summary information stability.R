@@ -2,14 +2,14 @@
 no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 
 source("code/tools.R")
 
 ######work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/microbiome_stability")
 
 ####load data
@@ -37,12 +37,7 @@ plyr::dlply(.variables = .(IRIS))  %>%
       colMeans(na.rm = TRUE)
   })
   
-
 boxplot(temp2)
-
-
-
-
 
 dim(stool_stability)
 dim(skin_stability)
@@ -71,15 +66,11 @@ load(here::here("data_analysis/combine_microbiome/distance/nasal/personalized_sc
 nasal_personalized_score = personalized_score
 nasal_personalized_score$fc1 = nasal_personalized_score$between_mean1 - nasal_personalized_score$within_mean1
 
-
 stool_id = intersect(stool_personalized_score$genus, rownames(stool_stability))
 temp_data_stool = 
   data.frame(stability = apply(stool_stability, 1, function(x){mean(x, na.rm = TRUE)})[stool_id],
              dmi = stool_personalized_score$fc1[match(stool_id, stool_personalized_score$genus)],
              class = "Stool")
-
-
-
 
 skin_id = intersect(skin_personalized_score$genus, rownames(skin_stability))
 temp_data_skin = 
@@ -87,20 +78,17 @@ temp_data_skin =
              dmi = skin_personalized_score$fc1[match(skin_id, skin_personalized_score$genus)],
              class = "Skin")
 
-
 nasal_id = intersect(nasal_personalized_score$genus, rownames(nasal_stability))
 temp_data_nasal = 
   data.frame(stability = apply(nasal_stability, 1, function(x){mean(x, na.rm = TRUE)})[nasal_id],
              dmi = nasal_personalized_score$fc1[match(nasal_id, nasal_personalized_score$genus)],
              class = "Nasal")
 
-
 oral_id = intersect(oral_personalized_score$genus, rownames(oral_stability))
 temp_data_oral = 
   data.frame(stability = apply(oral_stability, 1, function(x){mean(x, na.rm = TRUE)})[oral_id],
              dmi = oral_personalized_score$fc1[match(oral_id, oral_personalized_score$genus)],
              class = "Oral")
-
 
 temp_data =
   rbind(temp_data_stool,
@@ -119,11 +107,11 @@ temp_data %>%
   labs(x = "DMI", y = "Stability")
 
 plot
-ggsave(plot, filename = "stability_plot.pdf", width = 8, height = 7)
+# ggsave(plot, filename = "stability_plot.pdf", width = 8, height = 7)
 
 ####add phylum to temp_data
 load(here::here("data_analysis/stool_microbiome/data_preparation/variable_info"))
-stool_variable_info =
+stool_variable_info <-
   variable_info
 
 load(here::here("data_analysis/skin_microbiome/data_preparation/variable_info"))
@@ -138,9 +126,7 @@ load(here::here("data_analysis/nasal_microbiome/data_preparation/variable_info")
 nasal_variable_info =
   variable_info
 
-
 library(plyr)
-
 
 temp_data = 
 temp_data %>%
@@ -188,7 +174,6 @@ temp_data %>%
   }) %>% 
   dplyr::bind_rows()
 
-
 ######stool stability plot
 ###only remain the phylum at least 5 points
 temp_data_stool = 
@@ -212,11 +197,9 @@ temp_data_stool %>%
   scale_color_manual(values = phylum_color) +
   labs(x = "DMI", y = "Stability")
 stool_stability_plot
-ggsave(stool_stability_plot,
-       filename = "stool_stability_plot.pdf", 
-       width = 8, height = 7)
-
-
+# ggsave(stool_stability_plot,
+#        filename = "stool_stability_plot.pdf", 
+#        width = 8, height = 7)
 
 
 ######skin stability plot

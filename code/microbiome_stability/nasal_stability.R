@@ -2,16 +2,15 @@
 no_function()
 # set work directory
 
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 library(tidyverse)
 rm(list = ls())
 
 source("code/tools.R")
 
 ######work directory
-masstools::setwd_project()
+setwd(masstools::get_project_wd())
 setwd("data_analysis/microbiome_stability")
-
 
 ####load data
 ###nasal microbiome
@@ -114,6 +113,6 @@ if(length(remove_idx) > 1){
     nasal_stability[-remove_idx,]
 }
 
-save(nasal_stability, file = "nasal_stability")
+# save(nasal_stability, file = "nasal_stability")
 
 
