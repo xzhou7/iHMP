@@ -1,0 +1,188 @@
+---
+title: "Dist-over-time-by-site"
+author: "Dan Spakowicz"
+date: "6/22/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(lme4)
+library(nlme)
+library(lmerTest)
+library(lmtest)
+```
+
+From Xin:
+
+> As we discussed, there is the raw data for our figure 3b. It can be loaded into R by “load(path_to_the_file)”. The variable you need will be “dist” which is the bray Curtis distance, and “diffdays” which is the time interval. We kept all other variables like batch or season so you can decide if this is something important in your model.
+There are two questions we want to answer in figure 3, 1) if the stool microbiome are the most stable one across time? 2) when one body site is not so stable (over time), does another body site also being unstable? We answered this a little bit in figure 3c, but would appreciate if you have additional ways to test or model this.
+
+```{r loaddata}
+
+files <- list.files("../data/", full.names = TRUE)
+files
+```
+
+```{r}
+load(files[1])
+load(files[2])
+load(files[3])
+load(files[4])
+load(files[5])
+```
+
+Initial version
+```{r}
+all <- bind_rows(temp_data_nasal,
+                 temp_data_oral,
+                 temp_data_skin,
+                 temp_data_stool)
+head(all)
+```
+
+Updated dataset with more rows
+```{r}
+all2 <- bind_rows(nasal_braydist_by_sample,
+                  oral_braydist_by_sample,
+                  skin_braydist_by_sample,
+                  stool_braydist_by_sample)
+
+head(all2)
+```
+
+
+```{r}
+all %>%
+  ggplot(aes(x = dist)) +
+  geom_histogram(aes(fill = dataset))
+```
+
+```{r}
+all2 %>%
+  ggplot(aes(x = dist)) +
+  geom_histogram(aes(fill = dataset))
+```
+
+```{r}
+all2v2 <- 
+  all2%>%
+  mutate(dist.0.99 = if_else(dist == 1,
+                             true = 0.9999999999999999,
+                             false = dist),
+         dist_log = log10(dist.0.99),
+         dist_neglogRec = -log10(1 - dist.0.99),
+         dist_logneglogRec = log10(dist_neglogRec),
+         dist_sqrt = sqrt(dist),
+         dist_logit = log(dist.0.99 / (1-dist.0.99)),
+         dist_asin = asin(sqrt(dist))
+         )
+
+# all.trans$dist[all.trans$dist == 1] <- 0.9999999999999999
+# 
+# all.trans <- all.trans %>% mutate(dist_trans = log10(-log10(1-dist)))
+```
+
+
+```{r}
+all2v2 %>%
+  select(dataset, contains("dist")) %>%
+  gather(-dataset, key = "measure", value = "value") %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(aes(fill = dataset)) +
+  facet_wrap(~measure, scales = "free")
+
+```
+
+The `dist_logneglogRec` variable appears the most normally distributed.
+
+
+# Modeling with untransformed data
+
+```{r}
+all %>%
+  ggplot(aes(x = diffdays, y = dist)) +
+  geom_point(aes(color = dataset), alpha = 0.05) +
+  stat_smooth(method = "lm", aes(group = dataset, color = dataset)) +
+  theme_bw()
+```
+
+Simple regression with an interaction term for source of the microbes.
+```{r}
+m0 <- lm(dist ~ diffdays * dataset,
+         data = all)
+
+summary(m0)
+```
+
+
+Now check a model that takes into account the repeated measures for each individual.
+```{r}
+m1 <- lme(dist ~ diffdays * dataset,
+          random = ~1|subject_id1,
+         data = all)
+summary(m1)
+```
+
+# Modeling with transformed data
+
+```{r}
+all2v2 %>%
+  ggplot(aes(x = diffdays, y = dist_logneglogRec)) +
+  geom_point(aes(color = dataset), alpha = 0.05) +
+  stat_smooth(method = "lm", aes(group = dataset, color = dataset)) +
+  theme_bw()
+```
+
+Simple regression with an interaction term for source of the microbes.
+```{r}
+m2 <- lm(dist_logneglogRec ~ diffdays * dataset,
+         data = all2v2)
+
+summary(m2)
+```
+
+
+Now check a model that takes into account the repeated measures for each individual.
+```{r}
+m3 <- lme(dist_logneglogRec ~ diffdays * dataset,
+          random = ~1|subject_id1,
+         data = all2v2)
+
+summary(m3)
+```
+
+```{r}
+# Changed the optimizer, but it didn't really matter. There are convergence 
+# warnings with all of the optimizers but the summary convergence codes are OK
+m4 <- lmer(dist_logneglogRec ~ -1 + dataset:diffdays + 
+             (1 | subject_id1) + ( 1 + dataset | subject_id1), 
+           control = lmerControl(optimizer = "Nelder_Mead"),
+          data = all2v2)
+
+summary(m4)
+
+lrtest(m3, m4)
+```
+
+```{r}
+m5 <- lmer(dist_logneglogRec ~ diffdays:dataset + (1 | subject_id1) + ( 1 + dataset | subject_id1),
+          data = all2v2)
+
+summary(m5)
+
+lrtest(m4, m5)
+```
+
+```{r}
+m6 <- lmer(dist_logneglogRec ~ diffdays:dataset + ( 1 + dataset | subject_id1),
+          data = all2v2)
+
+summary(m6)
+
+lrtest(m5, m6)
+```
+
+
