@@ -1,0 +1,76 @@
+---
+title: "03_modeling"
+author: "Dan Spakowicz"
+date: "September 14, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if (!require("install.load")) {
+  install.packages("install.load")
+  library(install.load)
+}
+
+# CRAN packages
+list.of.packages <- c("tidyverse", "brms", "broom")
+
+install.load::install_load(list.of.packages)
+```
+
+```{r}
+load("data/processed/model-df.Rdata")
+
+x <- model.trans %>%
+  filter(cluster != 2) %>%
+  mutate(cluster = fct_drop(cluster))
+
+table(x$cluster)
+```
+
+# Model
+
+```{r}
+# This should be modified to include all of the cytokines and genera of interest
+# The format of the data frame should have each cytokine and genus as a column
+cytokines <- c("IL17F")
+genera <- c("Akkermansia")
+################################
+
+cytokine.model.output <- list()
+
+for (c in cytokines) {
+  
+  genera.model.output <- list()
+  for (g in genera) {
+    
+    f <- as.formula(paste(g, "~ days + (1|SubjectID) + cluster *", c, 
+                          sep = " "))
+    
+    brm <- brms::brm(f, data = x, sparse = TRUE, family = negbinomial())
+    
+    # Reformat output
+    brm.df <- broom::tidy(brm)
+    
+    # Create column to track the genus being modelled
+    brm.df$genus <- g
+    
+    # Create list of outputs for each genus
+    genera.model.output[[g]] <- 
+      brm.df %>%
+      mutate(significant = !lower <= 0 & upper >= 0) %>%
+      filter(grepl(c, brm.df$term))
+  }
+  
+  cytokine.model.output[[c]] <- bind_rows(genera.model.output)
+}
+
+```
+
+The hypothesis is that interaction term will be significant more frequently than the cytokine fixed term alone. 
+
+```{r save model for 02_model-validation.Rmd}
+save(brm, file = "data/model-output.RData")
+```
+

@@ -1,0 +1,208 @@
+---
+title: "02_variable-selection"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if (!require("install.load")) {
+  install.packages("install.load")
+  library(install.load)
+}
+
+# Packages
+list.of.packages <- c("tidyverse", "lme4", "lmtest", "nlme", "lcmm", "MASS",
+                      "brms", "sjPlot", "sjstats")
+
+install.load::install_load(list.of.packages)
+```
+
+```{r}
+load("../data/processed/model-df.Rdata")
+
+x <- model.trans
+```
+
+
+```{r}
+ctrl <- lmeControl(opt = 'optim')
+lme00 <- lme(Akk.logit ~ il17.logit,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme00)
+```
+
+This shows IL17 to be a significant predictor of Akk.logit levels.
+
+However, the model seriously deviates from assumptions of normality; there is notable patterning to the residuals.
+
+```{r}
+plot(lme00)
+```
+
+Regardless, I'll use this framework to estimate predictor variables to find the best performing lme model and then test its prediction accuracy against other model types. 
+
+The next model I'll check includes infection as a covariate. 
+
+```{r}
+lme01 <- lme(Akk.logit ~ il17.logit + Infection,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme01)
+```
+
+Both il17.logit and Infection are significant, as is Infection's effect on the overall model by likelihood ratio test.
+
+```{r}
+lrtest(lme00, lme01)
+```
+
+Now I'll check if there is an interaction between the covariates. 
+
+```{r}
+lme02 <- lme(Akk.logit ~ il17.logit * Infection,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme02)
+lrtest(lme01, lme02)
+```
+
+Interaction term is not significant, nor does the inclusion of an interaction term reduce the residual variance of the model. 
+
+
+Now I'll include `Season`, which is a factor with four variables.
+
+```{r}
+lme03 <- lme(Akk.logit ~ il17.logit + Infection + Season,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme03)
+```
+
+None of the seasons are significant in this model.
+
+```{r}
+lme04 <- lme(Akk.logit ~ il17.logit + Infection + days,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme04)
+```
+
+The days are highly signficant, and now il17.logit has a pvalue of 0.09. Given that we'd like to include it in the model, the alpha threshold for variable selection will be defined as 0.1.
+
+```{r}
+lrtest(lme04, lme01)
+```
+
+The inclusion of days significantly improves the model.
+
+```{r}
+lme05 <- lme(Akk.logit ~ il17.logit * days + Infection,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme05)
+```
+
+No significant interaction between il17.logit and time -- exclude from the model.
+
+```{r}
+lme06 <- lme(Akk.logit ~ il17.logit + Infection + days + days2,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme06)
+lrtest(lme06, lme04)
+```
+
+A second-order time component benefits the model, though with a pvalue > 0.05. In order to include il17.logit the alpha must be set to 0.1; applying that threshold to this effect includes days2.
+
+```{r}
+lme07 <- lme(Akk.logit ~ il17.logit + Infection + days + days2 + days3,
+             random = list(~1 | SubjectID),
+             data = x, na.action = na.omit,
+             method = "ML", control = ctrl)
+summary(lme07)
+```
+
+A cubic time term does not improve the model.
+
+Now I'll check for a random slope term for days.
+
+```{r}
+lme04.1 <- lme(Akk.logit ~ il17.logit + Infection + days,
+               random = list(~1 + days | SubjectID),
+               data = x, na.action = na.omit,
+               method = "ML", control = ctrl)
+summary(lme04.1)
+lrtest(lme04, lme04.1)
+```
+
+Adding in a random slope as well as intercept significantly improves the model. 
+
+```{r}
+lme04.1 <- lme(Akkermansia ~ il17.logit + Infection + days,
+               random = list(~1 +days | SubjectID),
+               data = x, na.action = na.omit,
+               method = "ML", control = ctrl)
+summary(lme04.1)
+```{r}
+ctrl <- lmeControl(opt = 'optim')
+
+lm00 <- lme(Akk.logit ~ il17.logit + Infection + Season + days,
+            random = list(~1 | SubjectID),
+            data = df, na.action = na.omit,
+            method = "ML", control = ctrl)
+summary(lm00)
+
+lm00 <- lmer(Akk.logit ~ il17.logit + Infection + Season + days + (1 | SubjectID),
+             data = df, na.action = na.omit)
+summary(lm00)
+
+```
+
+```{r}
+glm00 <- glmer.nb(Akkermansia ~ IL17F + Infection + days + (1|SubjectID),
+                  data = x)
+
+summary(glm00)
+```
+
+
+```{r}
+brm00 <- brms::brm(Akkermansia ~ IL17F + Infection + days + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+summary(brm00)
+
+plot_model(brm00)
+plot(brm00)
+plot(marginal_effects(brm00))
+
+```
+
+```{r}
+brm01 <- brms::brm(Akkermansia ~ IL17F + Infection + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+summary(brm01)
+
+```
+
+```{r}
+brm02 <- brms::brm(Akkermansia ~ IL17F + Infection + Season + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+summary(brm02)
+
+```
+```{r}
+brm03 <- brms::brm(Akkermansia ~ IL17F + Infection + cluster + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+summary(brm03)
+```
+
+

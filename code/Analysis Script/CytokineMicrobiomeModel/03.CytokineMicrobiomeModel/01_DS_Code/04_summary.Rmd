@@ -1,0 +1,47 @@
+---
+title: "04_summary"
+author: "Dan Spakowicz"
+date: "September 13, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Processing
+
+Microbiome, cytokine and metadata including clusters assigned by gaussian mixture models were joined to create the table used for modeling. The infection state was collapsed to healthy or sick, and time was normalized to start of the study for each individual. Spectral counts for cytokines were scaled from zero to one. 
+
+# Transformations
+
+Continuous data (cytokine, microbe) were analyzed using means and standard deviations and categorical data (infection state, season) using counts and percents. The normality distribution assumption was evaluated visually with histograms. Both continuous data variables showed significant deviation from normality. A and logit transformations were used in models that assume a Gaussian distribution of errors (See Supplemental Figures). To avoid infinite values after transformation, zeros and ones were adjusted by adding or subtracting half of the smallest observed value, as described previously.
+
+# Variable Selection
+
+Variables were selected in the context of a linear mixed effect regression approach. A model was constructed using all five of the predictor variables as well as linear and quadratic time. Into the model was included random effects for either just the intercept or for the intercept and the slope. The intercept and slope model had a less negative log-likelihood value, suggesting that it was the better model for these data (Table 1). A log-likelihood ratio test of the two models showed the difference between them was significant at an alpha of 0.05 (Chi-squared with two degrees of freedom, p-value=0.008517). All further models contained random effects for both the intercept and slope.
+
+Next was tested the unadjusted associations of each of the five predictor variables; each predictor variable was placed in the model alone with linear and quadratic time to determine its predictive power on SSPG in the absence of competing fixed effects. Weight alone had a significant fixed effect coefficient at alpha 0.1 (p-value=0.0723) (Table 2). The next lowest p-value was Eubacterium with 0.15. Interestingly, both of the metabolites, which seemed to vary similarly to the weight, had p-values >0.4 (Table 2, Fig 1B-D). We first examined the type and number of random effects starting with a random intercept for subject followed by a random intercept and random slope. The two were compared using the log-likelihood ratio test (alpha = 0.05). Each predictor was evaluated individually and pairwise and parameters of these associations were enumerated in a model with linear and quadratic time. The final model included predictors selected at alpha 0.10, chosen to account for the relatively small number of participants. The optimal model was chosen using a manual step-wise approach and evaluated by testing the normality assumption of the random effects by histogram, the residuals by scatterplot, and the variance by variogram (See Supplemental Figures). Data were analyzed using R [21], using the packages nlme [22], lmtest [23], and joineR [24] to create and evaluate the model.
+
+# Model building
+
+Following a manual forward-model selection method, next was tested whether the pairwise effects of all combinations of predictor variables led to different patterns of significances or other variables being significant in addition to the weight predictor. Weight retained a similar p-value when paired with each of the other predictors, except with Eubacteria where its p-value increased above the alpha threshold of 0.1 (Table 2, pw=0.1285, pEu=0.1974). None of the other predictors were significant in any of the combinations. Notably, the p-values of the PS metabolite varied widest, with a value of 0.9 when paired with weight and down to 0.2 when paired with the microbe Escherichia. As this method failed to show a clear optimal model.
+
+Next, a manual backwards selection method was employed from the full model. Removing the parameter with the highest p-value (PI20:0, p-value=0.3281) produced a model in which three different parameters were significant, more than any other model with either more or fewer parameters (Table 4). Moreover, the log-likelihood values between the of the models were not significantly different from each other: the model containing all five predictors (log-likelihood -157.87) was not significantly different than the model containing only weight and time as the predictors (log-likelihood -161.53, Chisq p-value=0.1191)(Table 5). The only exception to this was the comparison of model number two with model number four, giving further marginal support for model two being the optimal given weak evidence. 
+
+The final model shows three significant parameters at alpha 0.1: weight, the presence or absence of Escherichia and the quadratic time. The quadratic effect of time is reasonable given the study design (Fig1A). As each participant was asked to increase their weight and then decrease it, one would expect that the time effect would have more features than being strictly linear. The magnitude of the parameter was small, however (0.00379, Table 4). The weight of the individual being a significant predictor in the model has a strong literature precedence, so much so that it could be considered an internal validation of the approach. There has long been known to be a connection between obesity and the development of T2D [25], and indeed that was the strongest effect observed for any of the fixed effect parameters.
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

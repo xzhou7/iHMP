@@ -1,0 +1,98 @@
+---
+title: "03_modeling"
+author: "Dan Spakowicz"
+date: "September 14, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if (!require("install.load")) {
+  install.packages("install.load")
+  library(install.load)
+}
+
+# CRAN packages
+list.of.packages <- c("tidyverse", "brms", "broom")
+
+install.load::install_load(list.of.packages)
+```
+
+```{r}
+load("data/processed/model-df.Rdata")
+
+model.trans$cluster <- relevel(model.trans$cluster, ref = 3)
+
+x <- model.trans %>%
+  filter(cluster != 2) %>%
+  mutate(cluster = fct_drop(cluster))
+
+table(x$cluster)
+```
+
+
+```{r}
+cluster.model.output <- list()
+  
+  for (g in genus) {
+  brm <- brms::brm(Akkermansia ~ IL17F + days + cluster + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+  
+  brm.df <- tidy(brm)
+  
+  cluster.model.output <- 
+    brm.df %>%
+    filter()
+}
+
+brm00 <- brms::brm(Akkermansia ~ IL17F + days + cluster + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+summary(brm05)
+```
+```{r}
+mdf <- tidy(brm05)
+
+ci.eval <- !mdf$lower <= 0 & mdf$upper >=0 
+mdf$term[ci.eval]
+
+
+plot(brm05)
+```
+
+```{r}
+brm06 <- brms::brm(Akkermansia ~ IL17F + days + cluster + (1|SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+
+summary(brm06)
+```
+
+```{r}
+brm03 <- brms::brm(Akkermansia ~ IL17F + (1 | cluster:SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+plot(brm03)
+
+summary(brm03)
+
+plot(marginal_effects(brm03))
+zz <- tidy(brm03)
+zz
+```
+
+```{r}
+brm08 <- brms::brm(Akkermansia ~ IL17F + cluster + (1 | SubjectID),
+                  data = x, sparse = TRUE, family = negbinomial())
+
+summary(brm08)
+
+zz <- tidy(brm08)
+```
+
+```{r}
+lme00 <- lmer(Akkermansia ~ IL17F + cluster + days + (1 | SubjectID),
+                  data = x)
+
+summary(lme00)
+```
+
+

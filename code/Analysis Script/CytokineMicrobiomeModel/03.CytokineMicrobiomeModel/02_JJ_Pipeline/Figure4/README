@@ -1,0 +1,25 @@
+The files in this location contain code used to perform the analysis depicted in
+Figure 4 of the manuscript supplied by Zhou et al. (NCOMMS_19_01111_T). 
+
+There are two directories in this location: 
+
+data
+----
+ Contains the input data for this analysis. 
+
+src
+---
+ Contains the code for this analysis. Files were run as follows: 
+ 
+ 1) prepare-dataset.R 
+    Reads in flat files containing input data, then generates a single R file
+    contiaining cytokine + host data for each of the three cytokines of 
+    interest (IL17A, IL17F, IL22). 
+
+ 2) pipeline_glmm.py
+    This script splits the processed input data into cytokines + genus pairs 
+    so that models can be run in an embarassingly paralell manner. 
+
+ 3) run_glmm.R
+    This script is called by pipeline_glmm.py. It contains R code for running
+     the Bayesian mixed-effects model described in the manuscript.

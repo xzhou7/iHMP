@@ -1,0 +1,95 @@
+---
+title: "brms-modeling-figure"
+author: "Dan Spakowicz"
+date: "11/9/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidybayes)
+library(ggridges)
+```
+
+```{r load data}
+load("data/model-output.RData")
+
+# Three letters for the model is far too many
+m <- brm
+rm(brm)
+
+# Change `days` back to numeric
+m[["data"]]$days <- 
+  m[["data"]]$days %>%
+  as.character() %>%
+  as.numeric()
+```
+
+# Model evaluation based on [the brms vignette https://cran.r-project.org/web/packages/brms/vignettes/brms_nonlinear.html]
+
+```{r summary}
+summary(m)
+```
+
+The goal of this is to visualize the result of this model in a way that displays the effect size. 
+
+# Version 1: Forest plot style 
+
+```{r cluster 3 interaction term}
+# Regenerating a table like the output from the modeling
+c3 <- broom::tidy(m) %>%
+  filter(grepl("cluster3:", term)) %>%
+  mutate(cytokine = str_remove(term, "b_cluster3:")) %>%
+  mutate(genus = m$formula$resp)
+
+```
+
+After completing this for all models `bind_rows` together, filter to significant interactions and plot
+
+```{r}
+c3 %>%
+  ggplot(aes(x = genus, y = estimate, ymin = lower, ymax = upper)) +
+  geom_pointrange() +
+  coord_flip() +
+  theme_bw() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Standardized Effect Size") +
+  facet_wrap(~cytokine)
+```
+
+# Version 2: ggridges style
+
+```{r}
+# Grab interaction term
+vars <- get_variables(m)
+term <- vars[grep("b_cluster3:", vars)]
+tsub <- gsub("b_cluster3:", "", term)
+genus <- "Akkermansia"
+
+genus.vec <- 
+  m %>%
+  spread_draws(!!sym(term)) %>%
+  select(!!sym(term)) %>%
+  mutate(genus = !!m$formula$resp) %>%
+  rename(value = !!sym(term)) %>%
+  mutate(cytokine = tsub)
+
+```
+
+After completing this for all models `bind_rows` together, and plot
+
+```{r}
+genus.vec %>%
+  ggplot(aes(x = value, y = genus)) +
+  geom_density_ridges() +
+  labs(x = "Standardized Effect Size",
+       y = "") +
+  facet_wrap(~cytokine) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  theme_bw()
+```
+
